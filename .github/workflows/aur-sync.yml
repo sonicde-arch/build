@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 callmetango for SonicDE.org
+
+name: Sync to AUR
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: |
+          The name of the GitHub repository to work on in the form [HOST/]OWNER/REPO.
+          It defaults to the repository where the workflow is run.
+jobs:
+  sync-to-aur:
+    runs-on: ubuntu-latest
+    steps:
+      - name:
+        uses: callmetango/archlinux-sync-to-aur-action@HEAD
+        with:
+          repository: ${{ inputs.repository }}
+          ssh-private-key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}

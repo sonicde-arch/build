@@ -1,0 +1,73 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 callmetango for SonicDE.org
+
+name: Bump Version of Package
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: The repository of the package
+        type: string
+      pkgver:
+        description: pkgver
+        type: string
+      pkgrel:
+        description: pkgrel
+        type: string
+      srcinfo:
+        description: Generate new .SRCINFO
+        type: choice
+        options:
+          - auto
+          - true
+          - false
+        default: auto
+      updpkgsums:
+        description: Update the checksums of the PKGBUILD
+        type: boolean
+        default: true
+      namcap:
+       description: run namcap
+       type: boolean
+       default: true
+      token:
+        description: The token to use
+        type: string
+permissions:
+  contents: write
+
+env:
+  REPOSITORY: ${{ inputs.repository || github.repository }}
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up environment
+        run: |
+          if [ "${REPOSITORY#*/}" = "$REPOSITORY" ]; then
+            echo "REPOSITORY=${GITHUB_REPOSITORY_OWNER}/${REPOSITORY}" \
+                >> $GITHUB_ENV
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.REPOSITORY }}
+          token: ${{ inputs.token || github.token }}
+
+      - name: Bump version
+        id: bump
+        uses: callmetango/archlinux-build-package-action@HEAD
+        with:
+          pkgver: ${{ inputs.pkgver }}
+          pkgrel: ${{ inputs.pkgrel }}
+          srcinfo: ${{ inputs.srcinfo }}
+          updpkgsums: ${{ inputs.updpkgsums }}
+          namcap: ${{ inputs.namcap }}
+          makepkg: false
+
+      - name: Commit
+        uses: EndBug/add-and-commit@v10
+        with:
+          message: v${{ steps.bump.outputs.pkgver }}-${{ steps.bump.outputs.pkgrel }}

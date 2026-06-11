@@ -1,0 +1,487 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 callmetango for SonicDE.org
+
+name: Build All and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      force-build:
+       description: Force the build of all packages
+       type: boolean
+       default: false
+
+jobs:
+  sonic-activities:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+    with:
+      repository: ${{ github.repository_owner }}/sonic-activities
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-audio-applet-pulse:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-interface-libraries
+      - sonic-workspace
+    with:
+      repository: ${{ github.repository_owner }}/sonic-audio-applet-pulse
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-decoration:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-decoration
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-desktop-interface:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-activities
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-open-collab
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-runner
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-sysguard-library
+      - sonic-win
+      - sonic-workspace
+    with:
+      repository: ${{ github.repository_owner }}/sonic-desktop-interface
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-auth:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-windowsystem
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-auth
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-cmake-modules:
+    uses: ./.github/workflows/build-package.yml
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-cmake-modules
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-core-addons:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-core-addons
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-doctools:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-doctools
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-gui-addons:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-gui-addons
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-io:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-windowsystem
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-io
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-io-extras:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-activities
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-io
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-io-extras
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-keybind:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-keybind
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-open-collab:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-open-collab
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-quick-ui:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-quick-ui
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-runner:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-windowsystem
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-runner
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-frameworks-windowsystem:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-frameworks-windowsystem
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-interface-libraries:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-activities
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+    with:
+      repository: ${{ github.repository_owner }}/sonic-interface-libraries
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-keybind-daemon:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-windowsystem
+    with:
+      repository: ${{ github.repository_owner }}/sonic-keybind-daemon
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-login-manager:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-screen-library
+      - sonic-workspace
+    with:
+      repository: ${{ github.repository_owner }}/sonic-login-manager
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-network-manager:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-workspace
+    with:
+      repository: ${{ github.repository_owner }}/sonic-network-manager
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-screen:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-screen-library
+    with:
+      repository: ${{ github.repository_owner }}/sonic-screen
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-screen-library:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+    with:
+      repository: ${{ github.repository_owner }}/sonic-screen-library
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-screenlocker:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-screen-library
+    with:
+      repository: ${{ github.repository_owner }}/sonic-screenlocker
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-silver-sddm:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-doctools
+      - sonic-workspace
+    with:
+      repository: ${{ github.repository_owner }}/sonic-silver-sddm
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-silver-theme:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-decoration
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+    with:
+      repository: ${{ github.repository_owner }}/sonic-silver-theme
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-sysguard-library:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-quick-ui
+    with:
+      repository: ${{ github.repository_owner }}/sonic-sysguard-library
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-system-info:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-io
+      - sonic-frameworks-quick-ui
+    with:
+      repository: ${{ github.repository_owner }}/sonic-system-info
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-win:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-activities
+      - sonic-decoration
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-keybind-daemon
+      - sonic-screenlocker
+    with:
+      repository: ${{ github.repository_owner }}/sonic-win
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-workspace:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-activities
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-io-extras
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-runner
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-screenlocker
+      - sonic-sysguard-library
+      - sonic-win
+    with:
+      repository: ${{ github.repository_owner }}/sonic-workspace
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-workspace-addons:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-runner
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-workspace
+    with:
+      repository: ${{ github.repository_owner }}/sonic-workspace-addons
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-workspace-wallpapers:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-runner
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-workspace
+    with:
+      repository: ${{ github.repository_owner }}/sonic-workspace-wallpapers
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonicde-meta:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-audio-applet-pulse
+      - sonic-desktop-interface
+      - sonic-frameworks-cmake-modules
+      - sonic-login-manager
+      - sonic-network-manager
+      - sonic-screen
+      - sonic-silver-theme
+      - sonic-system-info
+      - sonic-workspace-addons
+    with:
+      repository: ${{ github.repository_owner }}/sonicde-meta
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  all-packages:
+    needs:
+      - sonic-activities
+      - sonic-audio-applet-pulse
+      - sonic-decoration
+      - sonic-desktop-interface
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-io-extras
+      - sonic-frameworks-keybind
+      - sonic-frameworks-open-collab
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-runner
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-keybind-daemon
+      - sonic-login-manager
+      - sonic-network-manager
+      - sonic-screen
+      - sonic-screen-library
+      - sonic-screenlocker
+      - sonic-silver-sddm
+      - sonic-silver-theme
+      - sonic-sysguard-library
+      - sonic-system-info
+      - sonic-win
+      - sonic-workspace
+      - sonic-workspace-addons
+      - sonic-workspace-wallpapers
+      - sonicde-meta
+    runs-on: ubuntu-slim
+    steps:
+      - name: All built
+        run: echo 'all built'
+
+  publish:
+    needs: all-packages
+    if: ${{ 0 == 1 }}
+    runs-on: ubuntu-slim
+    steps:
+      - name: Authenticate via app
+        id: app-token
+        if: ${{ vars.APP_CLIENT_ID }}
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}

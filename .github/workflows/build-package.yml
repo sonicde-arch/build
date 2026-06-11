@@ -1,0 +1,155 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 callmetango for SonicDE.org
+
+name: Build Package
+
+#env:
+#  APP_CLIENT_ID: ${{ vars.APP_CLIENT_ID }}
+#  APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+#  PGP_KEY: ${{ vars.RELEASE_SIGNING_PUBLIC_KEY }}
+#  SIGNING_KEY: ${{ secrets.RELEASE_SIGNING_KEY }}
+#  SIGNING_KEY_PASSWORD: ${{ secrets.RELEASE_SIGNING_KEY_PASSWORD }}
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        description: |-
+          Location of the GitHub repository containing the PKGBUILD file in the form of
+          [HOST/]OWNER/REPO.
+        type: string
+        required: true
+        default: ${{ github.repository }}
+      force-build:
+        description: |-
+          Force the build of the package. Replaces an eventually existing release
+          with the result of this build run.
+        type: boolean
+      packager:
+        type: string
+        description: >
+          The builder of the packages in the form of a name and an email address in
+          the form of John Doe <john@example.com>
+        default: ${{ vars.PACKAGER }}
+
+      # App-based authentication
+      app-client-id:
+         description: GitHub App Client ID
+         type: string
+         default: ${{ vars.APP_CLIENT_ID }}
+
+      # PGP key handling
+      pgp-key:
+        description: PGP key file to use for verifying packages
+        type: string
+        default: ${{ vars.RELEASE_SIGNING_PUBLIC_KEY }}
+    secrets:
+      app-private-key:
+         description: GitHub App private key
+      signing-key:
+        description: The OpenPGP key to sign the packages
+      signig-key-password:
+        description: The password of the signing key
+
+defaults:
+  run:
+    shell: sh
+
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+    env:
+      CARCH: x86_64 # FIXME make configurable
+      INPUT_REPOSITORY: ${{ inputs.repository }}
+      BUILD_NEEDED: ${{ inputs.force-build }}
+    steps:
+      - name: Authenticate via app
+        id: app-token
+        if: ${{ inputs.app-client-id }}
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ inputs.app-client-id }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout workflow # so we can run our own scripts
+        uses: actions/checkout@v6
+
+      - name: Set up environment
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          SCRIPTS_PATH: ${{ github.workspace }}/.github/scripts
+        run: |
+          set -u
+          chmod u+x "$SCRIPTS_PATH"/*.sh
+          . "$SCRIPTS_PATH"/gh-helpers.sh
+
+          if [ "$APP_TOKEN" ]; then
+            gh_env_set GITHUB_TOKEN "$APP_TOKEN"
+            gh_env_set GH_TOKEN "$APP_TOKEN"
+          else
+            gh_env_set GH_TOKEN "$GITHUB_TOKEN"
+          fi
+          gh_env_set SCRIPTS_PATH "$SCRIPTS_PATH"
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ inputs.repository }}
+          path: package
+
+      - name: Add package vars to environment
+        shell: bash
+        run: |
+          set -u
+          . "$SCRIPTS_PATH"/gh-helpers.sh
+          source package/PKGBUILD
+          gh_env_set RELEASE_TAG "v${pkgver}-${pkgrel}"
+
+      - name: Check if package was already built
+        if: ${{ env.BUILD_NEEDED != 'true' }}
+        run: |
+          . "$SCRIPTS_PATH"/gh-helpers.sh
+          set -u +e
+          gh release view --repo "$INPUT_REPOSITORY" "$RELEASE_TAG"
+          test $? -eq 0 || gh_env_set BUILD_NEEDED 'true'
+
+      - name: Download dependencies
+        if: ${{ env.BUILD_NEEDED == 'true' }}
+        run: |
+          "$SCRIPTS_PATH"/download-dependencies.sh 'package'
+
+      - name: Build package
+        if: ${{ env.BUILD_NEEDED == 'true' }}
+        uses: callmetango/archlinux-build-package-action@HEAD
+        with:
+          path: package
+          packager: ${{ inputs.packager }}
+          makepkg-opts: --syncdeps --noconfirm
+          srcinfo: false
+          pgp-key: ${{ inputs.pgp-key }}
+          signing-key: ${{ secrets.signing-key || secrets.RELEASE_SIGNING_KEY }}
+          signing-key-password: ${{ secrets.signig-key-password || secrets.RELEASE_SIGNING_KEY_PASSWORD }}
+          dependencies-path: dependencies
+
+      - name: Re-authenticate via app
+        id: reauth
+        if: ${{ env.BUILD_NEEDED == 'true' && inputs.app-client-id }}
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ inputs.app-client-id }}
+          private-key: ${{ secrets.app-private-key || secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Release package
+        if: ${{ env.BUILD_NEEDED == 'true' }}
+        env:
+          GH_TOKEN: ${{ steps.reauth.outputs.token }}
+        run: |
+          set -u +e # allow `gh release delete` to fail
+          gh release delete --repo "$INPUT_REPOSITORY" \
+              --cleanup-tag --yes "$RELEASE_TAG"
+          gh release create --repo "$INPUT_REPOSITORY" \
+              --title "$RELEASE_TAG" \
+              --notes "Automated release by the build bot" \
+              "$RELEASE_TAG" package/*.pkg.*
