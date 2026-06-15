@@ -222,6 +222,10 @@ jobs:
   sonic-login-manager:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - sonic-frameworks-auth
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-quick-ui
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-screen-library
@@ -243,6 +247,15 @@ jobs:
       - sonic-workspace
     with:
       repository: ${{ github.repository_owner }}/sonic-network-manager
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-night-light:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-core-addons
+    with:
+      repository: ${{ github.repository_owner }}/sonic-night-light
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
@@ -392,6 +405,7 @@ jobs:
       - sonic-frameworks-runner
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
+      - sonic-win
       - sonic-workspace
     with:
       repository: ${{ github.repository_owner }}/sonic-workspace-addons
@@ -410,6 +424,7 @@ jobs:
       - sonic-frameworks-runner
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
+      - sonic-win
       - sonic-workspace
     with:
       repository: ${{ github.repository_owner }}/sonic-workspace-wallpapers
@@ -419,15 +434,33 @@ jobs:
   sonicde-meta:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - sonic-activities
       - sonic-audio-applet-pulse
+      - sonic-decoration
       - sonic-desktop-interface
+      - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
-      - sonic-login-manager
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-runner
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-keybind-daemon
       - sonic-network-manager
+      - sonic-night-light
       - sonic-screen
+      - sonic-screen-library
+      - sonic-screenlocker
+      - sonic-silver-sddm
       - sonic-silver-theme
+      - sonic-sysguard-library
       - sonic-system-info
+      - sonic-win
+      - sonic-workspace
       - sonic-workspace-addons
+      - sonic-workspace-wallpapers
     with:
       repository: ${{ github.repository_owner }}/sonicde-meta
       force-build: ${{ inputs.force-build }}
