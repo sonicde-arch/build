@@ -385,6 +385,7 @@ jobs:
       - sonic-frameworks-runner
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
+      - sonic-night-light
       - sonic-screenlocker
       - sonic-sysguard-library
       - sonic-win
