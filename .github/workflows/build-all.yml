@@ -223,6 +223,7 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-io
       - sonic-frameworks-quick-ui
@@ -253,6 +254,7 @@ jobs:
   sonic-night-light:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
     with:
       repository: ${{ github.repository_owner }}/sonic-night-light
@@ -314,7 +316,9 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - sonic-decoration
+      - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
       - sonic-frameworks-quick-ui
       - sonic-frameworks-windowsystem
     with:
@@ -435,33 +439,16 @@ jobs:
   sonicde-meta:
     uses: ./.github/workflows/build-package.yml
     needs:
-      - sonic-activities
       - sonic-audio-applet-pulse
-      - sonic-decoration
       - sonic-desktop-interface
-      - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
-      - sonic-frameworks-core-addons
-      - sonic-frameworks-io
-      - sonic-frameworks-keybind
-      - sonic-frameworks-quick-ui
-      - sonic-frameworks-runner
-      - sonic-frameworks-windowsystem
-      - sonic-interface-libraries
-      - sonic-keybind-daemon
+      - sonic-login-manager
       - sonic-network-manager
       - sonic-night-light
       - sonic-screen
-      - sonic-screen-library
-      - sonic-screenlocker
-      - sonic-silver-sddm
       - sonic-silver-theme
-      - sonic-sysguard-library
       - sonic-system-info
-      - sonic-win
-      - sonic-workspace
       - sonic-workspace-addons
-      - sonic-workspace-wallpapers
     with:
       repository: ${{ github.repository_owner }}/sonicde-meta
       force-build: ${{ inputs.force-build }}
@@ -489,6 +476,7 @@ jobs:
       - sonic-keybind-daemon
       - sonic-login-manager
       - sonic-network-manager
+      - sonic-night-light
       - sonic-screen
       - sonic-screen-library
       - sonic-screenlocker
