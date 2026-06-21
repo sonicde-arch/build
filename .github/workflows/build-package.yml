@@ -152,4 +152,5 @@ jobs:
           gh release create --repo "$INPUT_REPOSITORY" \
               --title "$RELEASE_TAG" \
               --notes "Automated release by the build bot" \
+              --latest \
               "$RELEASE_TAG" package/*.pkg.*
