@@ -11,7 +11,7 @@ on:
           It defaults to the repository where the workflow is run.
 jobs:
   sync-to-aur:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name:
         uses: callmetango/archlinux-sync-to-aur-action@HEAD

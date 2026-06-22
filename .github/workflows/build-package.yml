@@ -57,7 +57,7 @@ defaults:
 
 jobs:
   build-package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       CARCH: x86_64 # FIXME make configurable
       INPUT_REPOSITORY: ${{ inputs.repository }}
