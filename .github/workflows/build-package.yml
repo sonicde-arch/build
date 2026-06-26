@@ -149,6 +149,7 @@ jobs:
           set -u +e # allow `gh release delete` to fail
           gh release delete --repo "$INPUT_REPOSITORY" \
               --cleanup-tag --yes "$RELEASE_TAG"
+          sleep 1
           gh release create --repo "$INPUT_REPOSITORY" \
               --title "$RELEASE_TAG" \
               --notes "Automated release by the build bot" \
