@@ -62,7 +62,7 @@ jobs:
       - sonic-frameworks-runner
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
-      - sonic-sysguard-library
+      - sonic-system-monitor-library
       - sonic-win
       - sonic-workspace
     with:
@@ -326,18 +326,6 @@ jobs:
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
-  sonic-sysguard-library:
-    uses: ./.github/workflows/build-package.yml
-    needs:
-      - sonic-frameworks-auth
-      - sonic-frameworks-cmake-modules
-      - sonic-frameworks-core-addons
-      - sonic-frameworks-quick-ui
-    with:
-      repository: ${{ github.repository_owner }}/sonic-sysguard-library
-      force-build: ${{ inputs.force-build }}
-    secrets: inherit
-
   sonic-system-info:
     uses: ./.github/workflows/build-package.yml
     needs:
@@ -349,6 +337,18 @@ jobs:
       - sonic-frameworks-quick-ui
     with:
       repository: ${{ github.repository_owner }}/sonic-system-info
+      force-build: ${{ inputs.force-build }}
+    secrets: inherit
+
+  sonic-system-monitor-library:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-quick-ui
+    with:
+      repository: ${{ github.repository_owner }}/sonic-system-monitor-library
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
@@ -391,7 +391,7 @@ jobs:
       - sonic-interface-libraries
       - sonic-night-light
       - sonic-screenlocker
-      - sonic-sysguard-library
+      - sonic-system-monitor-library
       - sonic-win
     with:
       repository: ${{ github.repository_owner }}/sonic-workspace
@@ -404,6 +404,7 @@ jobs:
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
       - sonic-frameworks-io
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
@@ -423,6 +424,7 @@ jobs:
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
       - sonic-frameworks-io
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
@@ -482,8 +484,8 @@ jobs:
       - sonic-screenlocker
       - sonic-silver-sddm
       - sonic-silver-theme
-      - sonic-sysguard-library
       - sonic-system-info
+      - sonic-system-monitor-library
       - sonic-win
       - sonic-workspace
       - sonic-workspace-addons
