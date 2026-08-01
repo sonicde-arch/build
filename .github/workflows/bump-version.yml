@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-# SPDX-FileCopyrightText: 2026 callmetango for SonicDE.org
+# SPDX-FileCopyrightText: 2026 callmetango for XLibre
 
 name: Bump Version of Package
 on:

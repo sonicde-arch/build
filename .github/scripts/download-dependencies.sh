@@ -1,68 +1,86 @@
 #!/bin/bash
 
 # SPDX-License-Identifier: AGPL-3.0-only
-# SPDX-FileCopyrightInfo: 2026 callmetango for SonicDE.org
+# SPDX-FileCopyrightInfo: 2026 callmetango for XLibre
 
-set -u
+set -eu
 
 # Script Parameters
-# $1: path to the directory containing the PKGBUILD
+# $1: binaries repository to download the dependencies from
+# $2: NEXT_RELEASE_TAG
+# $3: pkgbase to download the dependencies for
+
 
 # Constants
+
 ROOTDIR=$(pwd)
-DEPSWD="$ROOTDIR/dep-repos"
+DEPSWD="$(mktemp -d "${TMPDIR:-/tmp}/download-dependencies.XXXXXXXXXX")"
+
 
 # Functions
 
-# Resolve the dependencies of a given package = repository name of this GitHub
-# organization. It parses the PKGBUILDs and recursively records the
-# dependencies in the top level file "dependencies.csv".
+list_normalize() {
+	SPACE2NL='s/[[:space:]][[:space:]]*/\n/g'
+	DEL_EMPTY_LINES='/^[[:space:]]*$/d'
+
+	sed -i -e "$SPACE2NL" -e "$DEL_EMPTY_LINES" "$1"
+}
+
+# Resolve the dependencies of a given package. It parses the PKGBUILDs and
+# recursively records the dependencies in the top level file "dependencies.csv".
 #
-# $1: package name
+# $1: PKGBASE
 resolve_deps() {
 	test -e "$DEPSWD/$1" && return 0
+	test -e "$ROOTDIR/$1/PKGBUILD" || return 0 # skip split packages
 
-	gh repo clone "$GITHUB_REPOSITORY_OWNER/$1" "$DEPSWD/$1" -- --depth 1
-	cd "$DEPSWD/$1" || exit 1
+	mkdir -p "$DEPSWD/$1" && cd "$DEPSWD/$1"
 
-	source PKGBUILD
+	source "$ROOTDIR/$1"/PKGBUILD
+	printf "%s\n" "${pkgname[@]}" | grep -v "$1" >> ../dependencies.csv || true
 	printf "%s\n" "${depends[@]}" > raw-deps.csv
 	printf "%s\n" "${makedepends[@]}" >> raw-deps.csv
 
-	grep -xFf "$ROOTDIR"/org-packages.csv raw-deps.csv >> dependencies.csv
-	cat dependencies.csv >> "$ROOTDIR"/dependencies.csv
+	list_normalize raw-deps.csv
+	grep -xFf ../org-packages.csv raw-deps.csv >> dependencies.csv || true
+	cat dependencies.csv >> ../dependencies.csv
 
-	while IFS= read -r repo; do
-		resolve_deps "$repo"
+	while IFS= read -r PACKAGE; do
+		resolve_deps "$PACKAGE"
 	done < dependencies.csv
 }
 
-# Main
-if [ ! -e org-packages.csv ] ; then
-	printf 'Listing packages of this organization\n'
-	gh repo list --limit 999 --no-archived --source --topic package \
-		--json name "$GITHUB_REPOSITORY_OWNER" | \
-		jq -r '.[] | .name' | sort | tee org-packages.csv
-fi
 
-source "$1"/PKGBUILD
-PKGNAME="$pkgname"
-test $PKGNAME || PKGNAME="$pkgbase"
+# Main
+
+find . -mindepth 1 -name PKGBUILD -exec bash -c \
+	'source "{}" ; echo "${pkgname[@]}" >> org-packages.tmp' \;
+list_normalize org-packages.tmp
+mv org-packages.tmp "$DEPSWD"/org-packages.csv
+
+source "$3"/PKGBUILD
 
 printf '\nResolving dependencies\n'
-resolve_deps "$PKGNAME"
+resolve_deps "${pkgname[0]}"
 
-rm -rf "$DEPSWD"
-cd "$ROOTDIR"
+cd "$DEPSWD"
 
-# add repo owner to dependencies where missing
-sed "/\//!s:^:${GITHUB_REPOSITORY_OWNER}/:g" dependencies.csv > dependencies.csv.tmp
+list_normalize dependencies.csv
+mv dependencies.csv dependencies.csv.tmp
 cat dependencies.csv.tmp | sort | uniq > dependencies.csv
 
-printf '\nDownloading dependencies\n'
-mkdir dependencies
-while IFS= read -r repo; do
-	gh release download --repo "$repo" --pattern *.pkg.* --dir dependencies
-done < dependencies.csv
 
+printf '\nDownloading dependencies\n'
+
+cd "$ROOTDIR"
+mkdir -p dependencies
+
+while IFS= read -r PKGBASE; do
+	printf "Downloading $PKGBASE\n"
+	gh release download --skip-existing --repo "$1" \
+		--pattern "$PKGBASE"-*.pkg.* \
+		--dir dependencies "$2"
+done < "$DEPSWD"/dependencies.csv
+
+rm -rf "$DEPSWD"
 ls -l dependencies

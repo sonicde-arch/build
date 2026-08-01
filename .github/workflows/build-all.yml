@@ -7,24 +7,48 @@ on:
   workflow_dispatch:
     inputs:
       force-build:
-       description: Force the build of all packages
-       type: boolean
-       default: false
+        description: Force the build of all packages
+        type: boolean
+        default: false
+      branch:
+        description: The branch to build
+        type: choice
+        options:
+          - beta
+          - master
+        default: master
+
+env:
+  CARCH: x86_64
 
 jobs:
+  _setup:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/draft-release
+        with:
+          branch: ${{ inputs.branch }}
+          force-build: ${{ inputs.force-build }}
+          app-client-id: ${{ vars.APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
   sonic-activities:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
     with:
-      repository: ${{ github.repository_owner }}/sonic-activities
+      package: sonic-activities
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-audio-applet-pulse:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
@@ -33,22 +57,26 @@ jobs:
       - sonic-interface-libraries
       - sonic-workspace
     with:
-      repository: ${{ github.repository_owner }}/sonic-audio-applet-pulse
+      package: sonic-audio-applet-pulse
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-decoration:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-decoration
+      package: sonic-decoration
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-desktop-interface:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-activities
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
@@ -66,132 +94,159 @@ jobs:
       - sonic-win
       - sonic-workspace
     with:
-      repository: ${{ github.repository_owner }}/sonic-desktop-interface
+      package: sonic-desktop-interface
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-auth:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-windowsystem
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-auth
+      package: sonic-frameworks-auth
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-cmake-modules:
     uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-cmake-modules
+      package: sonic-frameworks-cmake-modules
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-core-addons:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-core-addons
+      package: sonic-frameworks-core-addons
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-doctools:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-doctools
+      package: sonic-frameworks-doctools
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-gui-addons:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-gui-addons
+      package: sonic-frameworks-gui-addons
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-io:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
       - sonic-frameworks-windowsystem
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-io
+      package: sonic-frameworks-io
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-io-extras:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-activities
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-io
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-io-extras
+      package: sonic-frameworks-io-extras
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-keybind:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-keybind
+      package: sonic-frameworks-keybind
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-open-collab:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-open-collab
+      package: sonic-frameworks-open-collab
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-quick-ui:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-quick-ui
+      package: sonic-frameworks-quick-ui
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-runner:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-windowsystem
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-runner
+      package: sonic-frameworks-runner
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-frameworks-windowsystem:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-frameworks-windowsystem
+      package: sonic-frameworks-windowsystem
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-interface-libraries:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-activities
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
@@ -202,26 +257,30 @@ jobs:
       - sonic-frameworks-quick-ui
       - sonic-frameworks-windowsystem
     with:
-      repository: ${{ github.repository_owner }}/sonic-interface-libraries
+      package: sonic-interface-libraries
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-keybind-daemon:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-io
       - sonic-frameworks-keybind
       - sonic-frameworks-windowsystem
     with:
-      repository: ${{ github.repository_owner }}/sonic-keybind-daemon
+      package: sonic-keybind-daemon
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-login-manager:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
@@ -232,13 +291,15 @@ jobs:
       - sonic-screen-library
       - sonic-workspace
     with:
-      repository: ${{ github.repository_owner }}/sonic-login-manager
+      package: sonic-login-manager
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-network-manager:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-io
@@ -247,23 +308,27 @@ jobs:
       - sonic-interface-libraries
       - sonic-workspace
     with:
-      repository: ${{ github.repository_owner }}/sonic-network-manager
+      package: sonic-network-manager
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-night-light:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
     with:
-      repository: ${{ github.repository_owner }}/sonic-night-light
+      package: sonic-night-light
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-screen:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-quick-ui
@@ -271,22 +336,26 @@ jobs:
       - sonic-interface-libraries
       - sonic-screen-library
     with:
-      repository: ${{ github.repository_owner }}/sonic-screen
+      package: sonic-screen
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-screen-library:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
     with:
-      repository: ${{ github.repository_owner }}/sonic-screen-library
+      package: sonic-screen-library
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-screenlocker:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
@@ -297,24 +366,26 @@ jobs:
       - sonic-interface-libraries
       - sonic-screen-library
     with:
-      repository: ${{ github.repository_owner }}/sonic-screenlocker
+      package: sonic-screenlocker
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-silver-sddm:
     uses: ./.github/workflows/build-package.yml
     needs:
-      - sonic-frameworks-cmake-modules
-      - sonic-frameworks-doctools
+      - _setup
       - sonic-workspace
     with:
-      repository: ${{ github.repository_owner }}/sonic-silver-sddm
+      package: sonic-silver-sddm
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-silver-theme:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-decoration
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
@@ -322,13 +393,15 @@ jobs:
       - sonic-frameworks-quick-ui
       - sonic-frameworks-windowsystem
     with:
-      repository: ${{ github.repository_owner }}/sonic-silver-theme
+      package: sonic-silver-theme
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-system-info:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
@@ -336,25 +409,29 @@ jobs:
       - sonic-frameworks-io
       - sonic-frameworks-quick-ui
     with:
-      repository: ${{ github.repository_owner }}/sonic-system-info
+      package: sonic-system-info
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-system-monitor-library:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-quick-ui
     with:
-      repository: ${{ github.repository_owner }}/sonic-system-monitor-library
+      package: sonic-system-monitor-library
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-win:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-activities
       - sonic-decoration
       - sonic-frameworks-auth
@@ -369,13 +446,15 @@ jobs:
       - sonic-keybind-daemon
       - sonic-screenlocker
     with:
-      repository: ${{ github.repository_owner }}/sonic-win
+      package: sonic-win
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-workspace:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-activities
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
@@ -394,13 +473,15 @@ jobs:
       - sonic-system-monitor-library
       - sonic-win
     with:
-      repository: ${{ github.repository_owner }}/sonic-workspace
+      package: sonic-workspace
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-workspace-addons:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
@@ -414,36 +495,28 @@ jobs:
       - sonic-win
       - sonic-workspace
     with:
-      repository: ${{ github.repository_owner }}/sonic-workspace-addons
+      package: sonic-workspace-addons
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonic-workspace-wallpapers:
     uses: ./.github/workflows/build-package.yml
     needs:
-      - sonic-frameworks-auth
+      - _setup
       - sonic-frameworks-cmake-modules
-      - sonic-frameworks-core-addons
-      - sonic-frameworks-gui-addons
-      - sonic-frameworks-io
-      - sonic-frameworks-keybind
-      - sonic-frameworks-quick-ui
-      - sonic-frameworks-runner
-      - sonic-frameworks-windowsystem
-      - sonic-interface-libraries
-      - sonic-win
-      - sonic-workspace
     with:
-      repository: ${{ github.repository_owner }}/sonic-workspace-wallpapers
+      package: sonic-workspace-wallpapers
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   sonicde-meta:
     uses: ./.github/workflows/build-package.yml
     needs:
+      - _setup
       - sonic-audio-applet-pulse
       - sonic-desktop-interface
-      - sonic-frameworks-cmake-modules
       - sonic-login-manager
       - sonic-network-manager
       - sonic-night-light
@@ -452,11 +525,13 @@ jobs:
       - sonic-system-info
       - sonic-workspace-addons
     with:
-      repository: ${{ github.repository_owner }}/sonicde-meta
+      package: sonicde-meta
+      branch: ${{ inputs.branch }}
       force-build: ${{ inputs.force-build }}
     secrets: inherit
 
   all-packages:
+    runs-on: ubuntu-24.04
     needs:
       - sonic-activities
       - sonic-audio-applet-pulse
@@ -491,21 +566,12 @@ jobs:
       - sonic-workspace-addons
       - sonic-workspace-wallpapers
       - sonicde-meta
-    runs-on: ubuntu-slim
     steps:
-      - name: All built
-        run: echo 'all built'
-
-  publish:
-    needs: all-packages
-    if: ${{ 0 == 1 }}
-    runs-on: ubuntu-slim
-    steps:
-      - name: Authenticate via app
-        id: app-token
-        if: ${{ vars.APP_CLIENT_ID }}
-        uses: actions/create-github-app-token@v3
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/release-packages
         with:
-          client-id: ${{ vars.APP_CLIENT_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
+          repository: ${{ vars.PACKAGES_REPOSITORY }}
+          branch: ${{ inputs.branch }}
+          repo-db-prefix: ${{ vars.REPO_DB_PREFIX }}
+          app-client-id: ${{ vars.APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}

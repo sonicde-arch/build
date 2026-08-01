@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 callmetango for XLibre
+
+name: Release packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: The testing repository to release
+        type: choice
+        options:
+          - oldstable-testing
+          - stable-testing
+        default: stable-testing
+
+defaults:
+  run:
+    shell: sh
+
+env:
+  CARCH: x86_64 # TODO make configurable
+
+jobs:
+  release-packages:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Authenticate via app
+        id: app-token
+        if: ${{ vars.APP_CLIENT_ID }}
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout workflow # so we can run our scripts
+        uses: actions/checkout@v6
+
+      - name: Setup env and download packages
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          INPUT_BRANCH: ${{ inputs.branch }}
+          INPUT_REPO_DB_PREFIX: ${{ vars.REPO_DB_PREFIX }}
+          SCRIPTS_DIR: ${{ github.workspace }}/.github/scripts
+        run: |
+          . "$SCRIPTS_DIR"/gh-helpers.sh
+          . "$SCRIPTS_DIR"/setup-build-env.sh
+
+          gh_env_set SOURCE_REPOSITORY "$GITHUB_REPOSITORY_OWNER/$INPUT_BRANCH"
+          gh_env_set TARGET_BRANCH "${INPUT_BRANCH%-testing}"
+          gh_env_set TARGET_REPOSITORY "$GITHUB_REPOSITORY_OWNER/$TARGET_BRANCH"
+          gh_env_set REPO_NAME "$INPUT_REPO_DB_PREFIX-$TARGET_BRANCH"
+
+          gh release download --skip-existing --pattern '*.pkg.*' \
+              --repo "$SOURCE_REPOSITORY" "$CURRENT_RELEASE_TAG"
+
+      - name: Create repo
+        uses: callmetango/archlinux-make-repo-action@HEAD
+        with:
+          reponame: ${{ env.REPO_NAME }}
+
+      - name: Release new release
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          "$SCRIPTS_DIR"/draft-new-release.sh "$TARGET_REPOSITORY" \
+              "$NEXT_RELEASE_TAG" 'true'
+          gh release upload --repo "$TARGET_REPOSITORY" "$NEXT_RELEASE_TAG" \
+              *.pkg.* "$REPO_NAME".files* "$REPO_NAME".db*
+          "$SCRIPTS_DIR"/release-new-release.sh "$TARGET_REPOSITORY" \
+              "$CURRENT_RELEASE_TAG" "$NEXT_RELEASE_TAG"

@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 callmetango for XLibre
+
+name: Draft a new release
+description: Action to draft a new release
+
+inputs:
+  repository:
+    description: |-
+      Location of the GitHub repository containing the package descriptions
+      in the form of [HOST/]OWNER/REPO.
+  branch:
+    description: The branch to build
+    required: true
+  force-build:
+    description: |-
+      Force the build of the packages. Removes the eventually existing draft
+      release.
+    type: boolean
+
+  # App-based authentication
+  app-client-id:
+    description: GitHub App Client ID
+  app-private-key: # secret
+    description: the private key of the app used for token generation
+
+runs:
+  using: composite
+  steps:
+    - name: Authenticate via app
+      id: app-token
+      if: ${{ inputs.app-client-id }}
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ inputs.app-client-id }}
+        private-key: ${{ inputs.app-private-key }}
+        owner: ${{ github.repository_owner }}
+
+    - name: Checkout workflow # so we can run our own scripts
+      uses: actions/checkout@v6
+
+    - name: Draft new release
+      env:
+        APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        INPUT_BRANCH: ${{ inputs.branch }}
+        INPUT_FORCE_BUILD: ${{ inputs.force-build }}
+        SCRIPTS_DIR: ${{ github.workspace }}/.github/scripts
+      shell: sh
+      run: |
+        . "${SCRIPTS_DIR}"/setup-build-env.sh
+        "${SCRIPTS_DIR}"/draft-new-release.sh "$TARGET_REPOSITORY" \
+            "$STAGING_TAG" "$INPUT_FORCE_BUILD"
