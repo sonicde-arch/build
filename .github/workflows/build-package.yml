@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-# SPDX-FileCopyrightText: 2026 callmetango for XLibre
+# SPDX-FileCopyrightText: 2026 callmetango for SonicDE
 
 name: Build Package
 
@@ -31,14 +31,14 @@ on:
         description: The name of the docker image to use
         type: string
         default: ${{ vars.DOCKER_IMAGE }}
-      force-build:
+      build-needed:
         description: |-
-          Force the build of the package. Replaces an eventually existing release
+          Force the build of the package. Replaces an eventually existing package
           with the result of this build run.
         type: boolean
 
       # App-based authentication
-      app-client-id:
+      app-id:
         description: GitHub App Client ID
         type: string
         default: ${{ vars.APP_CLIENT_ID }}
@@ -60,58 +60,27 @@ defaults:
   run:
     shell: sh
 
+env:
+  APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+  CARCH: x86_64 # TODO make configurable
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
   build-package:
     runs-on: ubuntu-24.04
-    env:
-      CARCH: x86_64 # TODO make configurable
-      BUILD_NEEDED: ${{ inputs.force-build }}
-      INPUT_BRANCH: ${{ inputs.branch }}
-      INPUT_PACKAGE: ${{ inputs.package }}
-      SCRIPTS_DIR: ${{ github.workspace }}/workflow/.github/scripts
     steps:
-      - name: Authenticate via app
-        id: app-token
-        if: ${{ inputs.app-client-id }}
-        uses: actions/create-github-app-token@v3
+      - name: Setup workspace
+        uses: callmetango/setup-workspace@HEAD
         with:
-          client-id: ${{ inputs.app-client-id }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
+          inputs: ${{ toJSON(inputs) }}
+          vars: ${{ toJSON(vars) }}
 
-      - name: Checkout workflow # so we can run our own scripts
-        uses: actions/checkout@v6
-        with:
-          path: workflow
-
-      - name: Checkout package definitions
-        uses: actions/checkout@v6
-        with:
-          repository: ${{ inputs.repository }}
-          ref: ${{ inputs.branch }}
-          path: pkgbuilds
-
-      - name: Set up environment
-        env:
-          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+      - name: Setup package build
         run: |
-          "${SCRIPTS_DIR}"/setup-build-env.sh
+          . setup-build-env.sh
+          setup-package-build.sh pkgbuilds/"$PACKAGE"
 
-      - name: Copy assets or set BUILD_NEEDED
-        if: ${{ env.BUILD_NEEDED != 'true' }}
-        working-directory: pkgbuilds
-        run: |
-          "${SCRIPTS_DIR}"/try-copy-assets.sh "$TARGET_REPOSITORY" \
-              "$CURRENT_RELEASE_TAG" "$STAGING_TAG" "$INPUT_PACKAGE"
-
-      - name: Download dependencies
-        if: ${{ env.BUILD_NEEDED == 'true' }}
-        working-directory: pkgbuilds
-        run: |
-          "${SCRIPTS_DIR}"/download-dependencies.sh "$TARGET_REPOSITORY" \
-              "$STAGING_TAG" "$INPUT_PACKAGE"
-
-      - name: Build package
+      - name: Build packages
         if: ${{ env.BUILD_NEEDED == 'true' }}
         uses: callmetango/archlinux-build-package-action@next
         with:
@@ -123,22 +92,15 @@ jobs:
           pgp-key: ${{ inputs.pgp-key }}
           signing-key: ${{ secrets.RELEASE_SIGNING_KEY }}
           signing-key-password: ${{ secrets.RELEASE_SIGNING_KEY_PASSWORD }}
-          dependencies-path: pkgbuilds/dependencies
+          custom-repo-name: ${{ env.STAGING_REPO_NAME }}
+          custom-repo-url: ${{ env.STAGING_REPO_URL }}
+          custom-repo-siglevel: Optional TrustAll
+          ninja: true
+          tmpfs: true
 
-      - name: Re-authenticate via app
-        id: reauth
-        if: ${{ env.BUILD_NEEDED == 'true' && inputs.app-client-id }}
-        uses: actions/create-github-app-token@v3
-        with:
-          client-id: ${{ inputs.app-client-id }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-
-      - name: Release package
+      - name: Add packages to release
         if: ${{ env.BUILD_NEEDED == 'true' }}
-        env:
-          GH_TOKEN: ${{ steps.reauth.outputs.token }}
-        working-directory: pkgbuilds
         run: |
-          gh release upload --repo "$TARGET_REPOSITORY" \
-              "$STAGING_TAG" "$INPUT_PACKAGE"/*.pkg.*
+          . setup-build-env.sh # reauthenticate
+          add-package-to-release.sh "$REPOSITORY" "$STAGING_TAG" \
+              "$REPO_DB_NAME" pkgbuilds/"$PACKAGE"

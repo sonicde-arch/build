@@ -1,17 +1,19 @@
 #!/bin/sh
 
 # SPDX-License-Identifier: AGPL-3.0-only
-# SPDX-FileCopyrightInfo: 2026 callmetango for XLibre
+# SPDX-FileCopyrightInfo: 2026 callmetango for SonicDE
+# SPDX-FileCopyrightInfo: 2026 Joseph Crowell joseph.w.crowell@gmail.com
 
 set -eu
 
-#. "${0%/*}"/gh-helpers.sh
+. "$SCRIPTS_DIR"/liblog.sh
 
 
-# Script Parameters
-# $1: binaries repository to check for existing artifacts
-# $2: CURRENT_RELEASE_TAG
-# $3: NEXT_RELEASE_TAG
+# Arguments
+
+# $1: repository to check for existing artifacts
+# $2: source tag
+# $3: target tag
 
 
 # Constants
@@ -21,20 +23,24 @@ NEW_NOTES='Current release by the build bot'
 
 # Main
 
-set +e
-PREV_RELEASE_DATE="$(gh release view --json publishedAt --repo "$1" "$2" \
-	| jq -r '.publishedAt')"
-set -e
-if [ "$PREV_RELEASE_DATE" ] ; then
-	OLD_TITLE="$(TZ=UTC date -d "$PREV_RELEASE_DATE" '+%Y%m%dT%H%M%S')"
-	OLD_TITLE="${2}-${OLD_TITLE}"
-	OLD_NOTES="Previous release $OLD_TITLE"
+trap log_close 0
+trap 'exit 1' HUP INT TERM
+log_open
 
-	printf "Renaming old release\n"
-	gh release edit --notes "$OLD_NOTES" --tag "$OLD_TITLE" --title "$OLD_TITLE" \
-		--repo "$1" "$2"
+set +e
+prevdate=$(gh release view --json publishedAt --repo "$1" "$3" \
+	| jq -r '.publishedAt')
+set -e
+if [ -n "$prevdate" ] && [ "$prevdate" != null ] ; then
+	oldtitle=$(TZ=UTC date -d "$prevdate" '+%Y%m%dT%H%M%S')
+	oldtitle="${3}-${oldtitle}"
+	oldnotes="Previous release $oldtitle"
+
+	inf "Renaming old release %s@%s to %s" "$1" "$3" "$oldtitle"
+	gh release edit --notes "$oldnotes" --tag "$oldtitle" --title "$oldtitle" \
+		--repo "$1" "$3"
 fi
 
-printf "Releasing new release\n"
-gh release edit --draft=false --latest --notes "$NEW_NOTES" \
-	--tag "$2" --title "$2" --repo "$1" "$3"
+inf "Releasing new release %s@%s" "$1" "$3"
+gh release edit --draft=false --latest=true --prerelease=false \
+	--notes "$NEW_NOTES" --tag "$3" --title "$3" --repo "$1" "$2"

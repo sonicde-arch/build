@@ -36,6 +36,10 @@ on:
 permissions:
   contents: write
 
+defaults:
+  run:
+    shell: sh
+
 env:
   REPOSITORY: ${{ inputs.repository || github.repository }}
 

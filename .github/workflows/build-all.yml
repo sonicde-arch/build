@@ -6,7 +6,7 @@ name: Build All and Publish
 on:
   workflow_dispatch:
     inputs:
-      force-build:
+      build-needed:
         description: Force the build of all packages
         type: boolean
         default: false
@@ -18,6 +18,10 @@ on:
           - master
         default: master
 
+defaults:
+  run:
+    shell: sh
+
 env:
   CARCH: x86_64
 
@@ -25,13 +29,18 @@ jobs:
   _setup:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/draft-release
+      - name: Setup workspace
+        uses: callmetango/setup-workspace@HEAD
         with:
-          branch: ${{ inputs.branch }}
-          force-build: ${{ inputs.force-build }}
-          app-client-id: ${{ vars.APP_CLIENT_ID }}
-          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          inputs: ${{ toJSON(inputs) }}
+          vars: ${{ toJSON(vars) }}
+
+      - name: Draft new release
+        env:
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+        run: |
+          . setup-build-env.sh
+          draft-new-release.sh "$REPOSITORY" "$STAGING_TAG" "$BUILD_NEEDED"
 
   sonic-activities:
     uses: ./.github/workflows/build-package.yml
@@ -42,7 +51,19 @@ jobs:
     with:
       package: sonic-activities
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-activities-stats:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-activities
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-activities-stats
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-audio-applet-pulse:
@@ -54,12 +75,63 @@ jobs:
       - sonic-frameworks-doctools
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
       - sonic-interface-libraries
       - sonic-workspace
     with:
       package: sonic-audio-applet-pulse
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-bluetooth-runtime:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-io
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+    with:
+      package: sonic-bluetooth-runtime
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-breeze:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-decoration
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-breeze
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-browser-integration:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-activities
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+      - sonic-workspace
+    with:
+      package: sonic-browser-integration
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-decoration:
@@ -70,7 +142,7 @@ jobs:
     with:
       package: sonic-decoration
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-desktop-interface:
@@ -78,16 +150,20 @@ jobs:
     needs:
       - _setup
       - sonic-activities
+      - sonic-activities-stats
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
       - sonic-frameworks-io
       - sonic-frameworks-keybind
       - sonic-frameworks-open-collab
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-runner
+      - sonic-frameworks-settings-ui
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-system-monitor-library
@@ -96,7 +172,43 @@ jobs:
     with:
       package: sonic-desktop-interface
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-dr-robotnik:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-idle-tracker
+      - sonic-frameworks-io
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-dr-robotnik
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-ecco:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-io
+      - sonic-frameworks-io-extras
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-ecco
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-auth:
@@ -109,7 +221,7 @@ jobs:
     with:
       package: sonic-frameworks-auth
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-cmake-modules:
@@ -119,7 +231,19 @@ jobs:
     with:
       package: sonic-frameworks-cmake-modules
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-color-scheme:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-gui-addons
+    with:
+      package: sonic-frameworks-color-scheme
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-core-addons:
@@ -130,7 +254,7 @@ jobs:
     with:
       package: sonic-frameworks-core-addons
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-doctools:
@@ -141,7 +265,7 @@ jobs:
     with:
       package: sonic-frameworks-doctools
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-gui-addons:
@@ -152,7 +276,31 @@ jobs:
     with:
       package: sonic-frameworks-gui-addons
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-icon-themes:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-silver-icons
+    with:
+      package: sonic-frameworks-icon-themes
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-idle-tracker:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-idle-tracker
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-io:
@@ -160,14 +308,16 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
       - sonic-frameworks-windowsystem
     with:
       package: sonic-frameworks-io
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-io-extras:
@@ -175,6 +325,7 @@ jobs:
     needs:
       - _setup
       - sonic-activities
+      - sonic-activities-stats
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
@@ -182,7 +333,20 @@ jobs:
     with:
       package: sonic-frameworks-io-extras
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-io-fuse:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+    with:
+      package: sonic-frameworks-io-fuse
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-keybind:
@@ -193,7 +357,7 @@ jobs:
     with:
       package: sonic-frameworks-keybind
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-open-collab:
@@ -204,7 +368,22 @@ jobs:
     with:
       package: sonic-frameworks-open-collab
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-quick-silver-style:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-quick-ui
+    with:
+      package: sonic-frameworks-quick-silver-style
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-quick-ui:
@@ -215,7 +394,24 @@ jobs:
     with:
       package: sonic-frameworks-quick-ui
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-quick-ui-addons:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+    with:
+      package: sonic-frameworks-quick-ui-addons
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-runner:
@@ -229,7 +425,31 @@ jobs:
     with:
       package: sonic-frameworks-runner
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-settings-ui:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+    with:
+      package: sonic-frameworks-settings-ui
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-silver-icons:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-silver-icons
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-windowsystem:
@@ -240,7 +460,23 @@ jobs:
     with:
       package: sonic-frameworks-windowsystem
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-gtk-theme-bridge:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-decoration
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-gtk-theme-bridge
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-interface-libraries:
@@ -249,9 +485,11 @@ jobs:
       - _setup
       - sonic-activities
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
       - sonic-frameworks-io
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
@@ -259,7 +497,7 @@ jobs:
     with:
       package: sonic-interface-libraries
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-keybind-daemon:
@@ -274,7 +512,7 @@ jobs:
     with:
       package: sonic-keybind-daemon
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-login-manager:
@@ -293,7 +531,7 @@ jobs:
     with:
       package: sonic-login-manager
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-network-manager:
@@ -301,16 +539,18 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
       - sonic-frameworks-io
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-workspace
     with:
       package: sonic-network-manager
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-night-light:
@@ -322,7 +562,48 @@ jobs:
     with:
       package: sonic-night-light
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-pipewire:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+    with:
+      package: sonic-pipewire
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-qt-theme-bridge:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-io
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-qt-theme-bridge
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-quick-image-editor:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-quick-ui
+    with:
+      package: sonic-quick-image-editor
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-screen:
@@ -338,7 +619,7 @@ jobs:
     with:
       package: sonic-screen
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-screen-library:
@@ -349,7 +630,28 @@ jobs:
     with:
       package: sonic-screen-library
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-screenies:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-windowsystem
+      - sonic-pipewire
+      - sonic-quick-image-editor
+    with:
+      package: sonic-screenies
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-screenlocker:
@@ -368,7 +670,36 @@ jobs:
     with:
       package: sonic-screenlocker
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-silver:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-decoration
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-silver-icons
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-silver
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-silver-gtk:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-silver
+    with:
+      package: sonic-silver-gtk
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-silver-sddm:
@@ -379,23 +710,7 @@ jobs:
     with:
       package: sonic-silver-sddm
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
-    secrets: inherit
-
-  sonic-silver-theme:
-    uses: ./.github/workflows/build-package.yml
-    needs:
-      - _setup
-      - sonic-decoration
-      - sonic-frameworks-cmake-modules
-      - sonic-frameworks-core-addons
-      - sonic-frameworks-gui-addons
-      - sonic-frameworks-quick-ui
-      - sonic-frameworks-windowsystem
-    with:
-      package: sonic-silver-theme
-      branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-system-info:
@@ -411,7 +726,7 @@ jobs:
     with:
       package: sonic-system-info
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-system-monitor-library:
@@ -425,7 +740,60 @@ jobs:
     with:
       package: sonic-system-monitor-library
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-terminal:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-terminal
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-terminal-tools:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-io
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-terminal-tools
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-welcome-center:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-io
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-network-manager
+    with:
+      package: sonic-welcome-center
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-win:
@@ -436,19 +804,23 @@ jobs:
       - sonic-decoration
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-idle-tracker
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-keybind-daemon
+      - sonic-night-light
       - sonic-screenlocker
+      - sonic-silver
     with:
       package: sonic-win
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-workspace:
@@ -456,26 +828,35 @@ jobs:
     needs:
       - _setup
       - sonic-activities
+      - sonic-activities-stats
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-idle-tracker
       - sonic-frameworks-io
       - sonic-frameworks-io-extras
+      - sonic-frameworks-io-fuse
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-runner
+      - sonic-frameworks-settings-ui
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-night-light
+      - sonic-pipewire
       - sonic-screenlocker
       - sonic-system-monitor-library
+      - sonic-terminal-tools
       - sonic-win
     with:
       package: sonic-workspace
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-workspace-addons:
@@ -486,9 +867,11 @@ jobs:
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
       - sonic-frameworks-io
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-runner
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
@@ -497,7 +880,7 @@ jobs:
     with:
       package: sonic-workspace-addons
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-workspace-wallpapers:
@@ -508,70 +891,134 @@ jobs:
     with:
       package: sonic-workspace-wallpapers
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonicde-meta:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-activities-stats
       - sonic-audio-applet-pulse
+      - sonic-bluetooth-runtime
+      - sonic-browser-integration
       - sonic-desktop-interface
+      - sonic-dr-robotnik
+      - sonic-ecco
+      - sonic-frameworks-quick-silver-style
+      - sonic-gtk-theme-bridge
       - sonic-login-manager
       - sonic-network-manager
       - sonic-night-light
+      - sonic-pipewire
+      - sonic-qt-theme-bridge
       - sonic-screen
-      - sonic-silver-theme
+      - sonic-screenies
+      - sonic-silver
+      - sonic-silver-gtk
       - sonic-system-info
+      - sonic-terminal
+      - sonic-terminal-tools
+      - sonic-welcome-center
       - sonic-workspace-addons
+      - xdg-desktop-portal-sonicde
     with:
       package: sonicde-meta
       branch: ${{ inputs.branch }}
-      force-build: ${{ inputs.force-build }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  xdg-desktop-portal-sonicde:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+      - sonic-pipewire
+      - sonic-workspace
+    with:
+      package: xdg-desktop-portal-sonicde
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   all-packages:
     runs-on: ubuntu-24.04
     needs:
       - sonic-activities
+      - sonic-activities-stats
       - sonic-audio-applet-pulse
+      - sonic-bluetooth-runtime
+      - sonic-breeze
+      - sonic-browser-integration
       - sonic-decoration
       - sonic-desktop-interface
+      - sonic-dr-robotnik
+      - sonic-ecco
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-idle-tracker
       - sonic-frameworks-io
       - sonic-frameworks-io-extras
+      - sonic-frameworks-io-fuse
       - sonic-frameworks-keybind
       - sonic-frameworks-open-collab
+      - sonic-frameworks-quick-silver-style
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-runner
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-silver-icons
       - sonic-frameworks-windowsystem
+      - sonic-gtk-theme-bridge
       - sonic-interface-libraries
       - sonic-keybind-daemon
       - sonic-login-manager
       - sonic-network-manager
       - sonic-night-light
+      - sonic-pipewire
+      - sonic-qt-theme-bridge
+      - sonic-quick-image-editor
       - sonic-screen
       - sonic-screen-library
+      - sonic-screenies
       - sonic-screenlocker
+      - sonic-silver
+      - sonic-silver-gtk
       - sonic-silver-sddm
-      - sonic-silver-theme
       - sonic-system-info
       - sonic-system-monitor-library
+      - sonic-terminal
+      - sonic-terminal-tools
+      - sonic-welcome-center
       - sonic-win
       - sonic-workspace
       - sonic-workspace-addons
       - sonic-workspace-wallpapers
       - sonicde-meta
+      - xdg-desktop-portal-sonicde
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/release-packages
+      - name: Setup workspace
+        uses: callmetango/setup-workspace@HEAD
         with:
-          repository: ${{ vars.PACKAGES_REPOSITORY }}
-          branch: ${{ inputs.branch }}
-          repo-db-prefix: ${{ vars.REPO_DB_PREFIX }}
-          app-client-id: ${{ vars.APP_CLIENT_ID }}
-          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          inputs: ${{ toJSON(inputs) }}
+          vars: ${{ toJSON(vars) }}
+
+      - name: Release new release
+        env:
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+        run: |
+          create_repo_db=1; delete_source=1
+          . setup-build-env.sh
+          copy-release.sh "$REPOSITORY" "$STAGING_TAG" \
+              "$REPOSITORY" "$CURRENT_TAG" $create_repo_db $delete_source

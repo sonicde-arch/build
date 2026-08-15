@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 callmetango for SonicDE
+
+name: Promote to stable
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch: # setup-build-env.sh uses BRANCH
+        description: The repository to promote the packages from
+        type: choice
+        options:
+          - stable-testing
+        default: stable-testing
+
+defaults:
+  run:
+    shell: sh
+
+env:
+  APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+  CARCH: x86_64 # TODO make configurable
+
+jobs:
+  release-packages:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Setup workspace
+        uses: callmetango/setup-workspace@HEAD
+        with:
+          inputs: ${{ toJSON(inputs) }}
+          vars: ${{ toJSON(vars) }}
+
+      - name: Promote to stable
+        run: |
+          . setup-build-env.sh
+          copy-release.sh "$REPOSITORY" "$CURRENT_TAG" \
+              "$STABLE_REPOSITORY" "$CURRENT_TAG"
