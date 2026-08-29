@@ -112,7 +112,9 @@ jobs:
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-silver-icons
       - sonic-frameworks-windowsystem
+      - sonic-silver
     with:
       package: sonic-breeze
       branch: ${{ inputs.branch }}
@@ -787,6 +789,7 @@ jobs:
       - sonic-frameworks-core-addons
       - sonic-frameworks-io
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-network-manager
@@ -936,6 +939,7 @@ jobs:
       - sonic-frameworks-core-addons
       - sonic-frameworks-icon-themes
       - sonic-frameworks-io
+      - sonic-frameworks-io-fuse
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
       - sonic-frameworks-windowsystem
