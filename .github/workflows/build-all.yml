@@ -121,6 +121,17 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
+  sonic-breeze-sddm:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-workspace
+    with:
+      package: sonic-breeze-sddm
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
   sonic-browser-integration:
     uses: ./.github/workflows/build-package.yml
     needs:
@@ -959,6 +970,7 @@ jobs:
       - sonic-audio-applet-pulse
       - sonic-bluetooth-runtime
       - sonic-breeze
+      - sonic-breeze-sddm
       - sonic-browser-integration
       - sonic-decoration
       - sonic-desktop-interface
