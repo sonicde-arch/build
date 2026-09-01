@@ -21,9 +21,9 @@ set -eu
 
 # Main
 
-APP_TOKEN=$(gh-app-token.sh "$APP_ID" "$GITHUB_REPOSITORY_OWNER")
-gh_env_set GITHUB_TOKEN "$APP_TOKEN"
-gh_env_set GH_TOKEN "$APP_TOKEN"
+auth=$(gh-app-token.sh "$APP_ID")
+gh_env_set GITHUB_TOKEN "$(printf '%s\n' "$auth" | cut -f1)"
+gh_env_set GH_TOKEN "$GITHUB_TOKEN"
 
 gh_env_set CURRENT_TAG "$CARCH"
 gh_env_set NEXT_TAG "$CARCH-next"

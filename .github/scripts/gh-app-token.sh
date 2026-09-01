@@ -10,12 +10,13 @@ set -eu
 # Arguments
 
 APP_ID="${1-$APP_ID}"
-GITHUB_REPOSITORY_OWNER="${2-$GITHUB_REPOSITORY_OWNER}"
 
 
 # Environment
 
+: "${APP_ID:?APP_ID must not be empty}"
 : "${APP_PRIVATE_KEY:?APP_PRIVATE_KEY must not be empty}"
+: "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY must not be empty}"
 
 
 # Main
@@ -43,14 +44,20 @@ signature=$(
 
 jwt="$header.$payload.$signature"
 
+app_slug=$(gh api --header "Authorization: Bearer $jwt" /app --jq '.slug')
+
 install_id=$(
 	gh api \
 		--header "Authorization: Bearer $jwt" \
-		"/orgs/$GITHUB_REPOSITORY_OWNER/installation" \
+		"/repos/$GITHUB_REPOSITORY/installation" \
 		--jq '.id'
 )
 
-gh api --method POST \
-	--header "Authorization: Bearer $jwt" \
-	"/app/installations/$install_id/access_tokens" \
-	--jq '.token'
+token=$(
+	gh api --method POST \
+		--header "Authorization: Bearer $jwt" \
+		"/app/installations/$install_id/access_tokens" \
+		--jq '.token'
+)
+
+printf '%s\t%s\n' "$token" "$app_slug"
