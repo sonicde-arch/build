@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 callmetango for SonicDE.org
+
+name: Bump versions
+
+on:
+  schedule:
+    - cron: '37 */3 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        branch: ${{ fromJSON(vars.BUMP_VERSIONS_BRANCHES) }}
+
+    steps:
+      - name: Setup workspace
+        uses: callmetango/setup-workspace@HEAD
+        with:
+          inputs: ${{ toJSON(inputs) }}
+          vars: ${{ toJSON(vars) }}
+
+      - name: Bump versions
+        env:
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          BRANCH: ${{ matrix.branch }}
+        run: |
+          . setup-version-bump.sh
+          bump-versions.sh "$BRANCH"
