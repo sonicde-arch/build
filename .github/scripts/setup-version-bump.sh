@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightInfo: 2026 callmetango for SonicDE
+
 set -eu
 
 . "$SCRIPTS_DIR"/liblog.sh
@@ -11,11 +14,6 @@ set -eu
 : "${APP_PRIVATE_KEY:?APP_PRIVATE_KEY must not be empty}"
 : "${GITHUB_WORKSPACE:?GITHUB_WORKSPACE must not be empty}"
 : "${PACKAGES_REPOSITORY:?PACKAGES_REPOSITORY must not be empty}"
-
-
-# Debug
-
-PACKAGES_REPOSITORY=sonicde-arch/nvcheck-dev
 
 
 # Main
