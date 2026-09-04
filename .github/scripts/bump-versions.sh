@@ -67,6 +67,8 @@ for config in */.nvchecker.toml; do
 	pkgbase=$(sed -n 's/^pkgbase = \(.*\)$/\1/p' "$dir"/.SRCINFO)
 	pkgver=$(sed -n 's/^[ \t]*pkgver = \(.*\)$/\1/p' "$dir"/.SRCINFO)
 
+	inf 'Checking for updates of %s v%s' "$pkgbase" "$pkgver"
+
 	printf '{"%s": "%s"}\n' "$pkgbase" "$pkgver" > "$tmpdir"/oldver
 	cat "$tmpdir"/base.toml "$config" > "$tmpdir"/nvchecker.toml
 
@@ -75,7 +77,7 @@ for config in */.nvchecker.toml; do
 	version=$(sed -n 's/.*": "\(.*\)"/\1/p' "$tmpdir"/newver)
 
 	test -n "$version" || die 1 'New version is empty for %s' "$pkgbase"
-	test "$version" = "$pkgver" && continue
+	test "$version" = "$pkgver" && { inf 'No new version found.' ; continue; }
 
 	pr="update/$base/$pkgbase-$version"
 	test -z "$(gh pr list --base "$base" --head "$pr")" || continue
