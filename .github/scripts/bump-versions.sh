@@ -96,7 +96,7 @@ for config in */.nvchecker.toml; do
 	git add "$dir"
 	git commit --message "$msg"
 	inf 'Pushing branch to %s ...' "$pr"
-	git push --set-upstream origin "$pr" >$dbg
+	git push --set-upstream origin "$pr"
 	gh pr create --base "$base" --head "$pr" --fill
 	git switch --discard-changes "$base"
 done
