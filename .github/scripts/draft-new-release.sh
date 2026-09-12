@@ -49,7 +49,8 @@ fi
 curname="$REPO_DB_NAME.db"
 revname="$REPO_DB_NAME-r0000.db"
 
-gh release download --repo "$1" "$CURRENT_TAG" --pattern "$curname" 2>$dbg || :
+test "$3" != 'true' &&
+	gh release download --repo "$1" "$CURRENT_TAG" --pattern "$curname" 2>$dbg || :
 test -f "$curname" || tar --zstd -cf "$curname" -T /dev/null
 
 mv "$curname" "$revname" && cp "$revname" "$revname.$CEXT"
