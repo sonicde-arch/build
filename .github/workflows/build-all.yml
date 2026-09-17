@@ -42,12 +42,35 @@ jobs:
           . setup-build-env.sh
           draft-new-release.sh "$REPOSITORY" "$STAGING_TAG" "$BUILD_NEEDED"
 
+  sonic-accounts-integration:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-keyring
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-sso
+      - sonic-qt-accounts-library
+    with:
+      package: sonic-accounts-integration
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
   sonic-activities:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-settings
     with:
       package: sonic-activities
       branch: ${{ inputs.branch }}
@@ -60,8 +83,28 @@ jobs:
       - _setup
       - sonic-activities
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-settings
     with:
       package: sonic-activities-stats
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-activity-manager-daemon:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-settings
+      - sonic-frameworks-xml-gui
+    with:
+      package: sonic-activity-manager-daemon
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -72,11 +115,20 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
       - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
       - sonic-frameworks-keybind
+      - sonic-frameworks-qml-bridge
       - sonic-frameworks-quick-ui
       - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-status-notification
+      - sonic-frameworks-svg
       - sonic-interface-libraries
+      - sonic-pulseaudio-library
       - sonic-workspace
     with:
       package: sonic-audio-applet-pulse
@@ -88,11 +140,22 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-bluetooth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
       - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-notifications
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-qml-bridge
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
     with:
@@ -111,10 +174,14 @@ jobs:
       - sonic-frameworks-core-addons
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-qt-integration
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
       - sonic-frameworks-silver-icons
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
-      - sonic-silver
     with:
       package: sonic-breeze
       branch: ${{ inputs.branch }}
@@ -125,6 +192,7 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-cmake-modules
       - sonic-workspace
     with:
       package: sonic-breeze-sddm
@@ -137,12 +205,48 @@ jobs:
     needs:
       - _setup
       - sonic-activities
+      - sonic-frameworks-app-info
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
+      - sonic-frameworks-file-metadata
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-purpose
+      - sonic-frameworks-settings
+      - sonic-frameworks-status-notification
       - sonic-workspace
     with:
       package: sonic-browser-integration
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-crypto-library:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+    with:
+      package: sonic-crypto-library
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-daemon:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-settings
+    with:
+      package: sonic-daemon
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -152,6 +256,7 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-internationalization
     with:
       package: sonic-decoration
       branch: ${{ inputs.branch }}
@@ -162,28 +267,78 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-accounts-integration
       - sonic-activities
       - sonic-activities-stats
-      - sonic-frameworks-auth
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-bookmarks
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
+      - sonic-frameworks-data-views
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
       - sonic-frameworks-doctools
+      - sonic-frameworks-file-search
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-notification-settings
+      - sonic-frameworks-notifications
       - sonic-frameworks-open-collab
+      - sonic-frameworks-package
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-qml-bridge
       - sonic-frameworks-quick-ui
       - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-runner
+      - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-spell-check
+      - sonic-frameworks-svg
+      - sonic-frameworks-text-codec
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
       - sonic-interface-libraries
+      - sonic-launcher-menu-edit
+      - sonic-pipewire
+      - sonic-plasma5-support-library
+      - sonic-polkit-agent
       - sonic-system-monitor-library
-      - sonic-win
       - sonic-workspace
     with:
       package: sonic-desktop-interface
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-disks:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-notifications
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-system-info
+    with:
+      package: sonic-disks
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -192,14 +347,54 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
       - sonic-frameworks-idle-tracker
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-keyring
+      - sonic-frameworks-notifications
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-status-notification
+      - sonic-frameworks-syntax-highlighting
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-polkit
     with:
       package: sonic-dr-robotnik
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-drawing-tablet:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-notifications
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
+      - sonic-interface-libraries
+      - sonic-plasma5-support-library
+    with:
+      package: sonic-drawing-tablet
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -208,18 +403,131 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-bookmarks
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
       - sonic-frameworks-doctools
+      - sonic-frameworks-file-metadata
+      - sonic-frameworks-file-search
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-io-extras
+      - sonic-frameworks-notifications
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-text-codec
+      - sonic-frameworks-text-widgets
+      - sonic-frameworks-ui-components
+      - sonic-frameworks-user-feedback
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
     with:
       package: sonic-ecco
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-exiv2-library:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-exiv2-library
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-file-search-ui:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-runner
+      - sonic-frameworks-settings
+      - sonic-frameworks-svg
+      - sonic-interface-libraries
+    with:
+      package: sonic-file-search-ui
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-firewall:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+    with:
+      package: sonic-firewall
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-addons-downloader:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-feeds
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-open-collab
+      - sonic-frameworks-package
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-frameworks-addons-downloader
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-app-info:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
+    with:
+      package: sonic-frameworks-app-info
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-archive:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-archive
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -231,8 +539,59 @@ jobs:
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-windowsystem
+      - sonic-polkit
     with:
       package: sonic-frameworks-auth
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-autocomplete:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-settings
+      - sonic-frameworks-text-codec
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-frameworks-autocomplete
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-barcode:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-barcode
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-bluetooth:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-bluetooth
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-bookmarks:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-frameworks-bookmarks
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -253,6 +612,8 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
     with:
       package: sonic-frameworks-color-scheme
       branch: ${{ inputs.branch }}
@@ -270,13 +631,120 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
-  sonic-frameworks-doctools:
+  sonic-frameworks-crash-handler:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+    with:
+      package: sonic-frameworks-crash-handler
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-data-models:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
+      package: sonic-frameworks-data-models
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-data-views:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-data-views
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-dbus:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-dbus
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-device-integration:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-device-integration
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-doctools:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-internationalization
+    with:
       package: sonic-frameworks-doctools
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-feeds:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-text-codec
+    with:
+      package: sonic-frameworks-feeds
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-file-metadata:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
+      - sonic-frameworks-text-codec
+    with:
+      package: sonic-frameworks-file-metadata
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-file-search:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-doctools
+      - sonic-frameworks-file-metadata
+      - sonic-frameworks-idle-tracker
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-settings
+    with:
+      package: sonic-frameworks-file-search
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -292,13 +760,28 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
-  sonic-frameworks-icon-themes:
+  sonic-frameworks-holidays:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-holidays
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-icon-themes:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
       - sonic-frameworks-silver-icons
+      - sonic-frameworks-widgets-addons
     with:
       package: sonic-frameworks-icon-themes
       branch: ${{ inputs.branch }}
@@ -316,16 +799,52 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
-  sonic-frameworks-io:
+  sonic-frameworks-image-formats:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-image-formats
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-internationalization:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-internationalization
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-io:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-archive
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-bookmarks
+      - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-views
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-keyring
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
     with:
       package: sonic-frameworks-io
@@ -339,10 +858,22 @@ jobs:
       - _setup
       - sonic-activities
       - sonic-activities-stats
+      - sonic-exiv2-library
+      - sonic-frameworks-app-info
+      - sonic-frameworks-archive
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
       - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-notifications
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-syntax-highlighting
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-zeroconf
     with:
       package: sonic-frameworks-io-extras
       branch: ${{ inputs.branch }}
@@ -373,6 +904,88 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
+  sonic-frameworks-keyring:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-notifications
+      - sonic-frameworks-settings
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-frameworks-keyring
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-keyring-pam:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-keyring
+    with:
+      package: sonic-frameworks-keyring-pam
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-modemmanager:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-modemmanager
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-networkmanager:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-networkmanager
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-notification-settings:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-settings
+    with:
+      package: sonic-frameworks-notification-settings
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-notifications:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-settings
+    with:
+      package: sonic-frameworks-notifications
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
   sonic-frameworks-open-collab:
     uses: ./.github/workflows/build-package.yml
     needs:
@@ -380,6 +993,133 @@ jobs:
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-open-collab
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-package:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+    with:
+      package: sonic-frameworks-package
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-progress-ui:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-notifications
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-frameworks-progress-ui
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-pseudo-terminal:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-internationalization
+    with:
+      package: sonic-frameworks-pseudo-terminal
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-purpose:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-accounts-integration
+      - sonic-frameworks-app-info
+      - sonic-frameworks-barcode
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-notifications
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-qt-accounts-library
+    with:
+      package: sonic-frameworks-purpose
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-qml-bridge:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-keybind
+      - sonic-frameworks-settings
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-frameworks-qml-bridge
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-qt-integration:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-notifications
+      - sonic-frameworks-settings
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-frameworks-qt-integration
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-quick-charts:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-quick-ui
+    with:
+      package: sonic-frameworks-quick-charts
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-quick-desktop-style:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-spell-check
+    with:
+      package: sonic-frameworks-quick-desktop-style
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -393,6 +1133,7 @@ jobs:
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
     with:
       package: sonic-frameworks-quick-silver-style
       branch: ${{ inputs.branch }}
@@ -417,12 +1158,33 @@ jobs:
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-keybind
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-spell-check
+      - sonic-frameworks-svg
     with:
       package: sonic-frameworks-quick-ui-addons
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-root-shell:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-pseudo-terminal
+      - sonic-frameworks-settings
+    with:
+      package: sonic-frameworks-root-shell
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -433,10 +1195,24 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
       - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
       - sonic-frameworks-windowsystem
     with:
       package: sonic-frameworks-runner
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-settings:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-settings
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -448,8 +1224,34 @@ jobs:
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
+      - sonic-frameworks-text-codec
+      - sonic-frameworks-widgets-addons
     with:
       package: sonic-frameworks-settings-ui
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-settings-utils:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-data-views
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-xml-gui
+    with:
+      package: sonic-frameworks-settings-utils
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -465,6 +1267,173 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
+  sonic-frameworks-spell-check:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-spell-check
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-sso:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+    with:
+      package: sonic-frameworks-sso
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-status-notification:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-windowsystem
+    with:
+      package: sonic-frameworks-status-notification
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-svg:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+    with:
+      package: sonic-frameworks-svg
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-syntax-highlighting:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-syntax-highlighting
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-text-codec:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-text-codec
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-text-editor:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-auth
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-data-views
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-spell-check
+      - sonic-frameworks-syntax-highlighting
+      - sonic-frameworks-text-codec
+      - sonic-frameworks-ui-components
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-xml-gui
+    with:
+      package: sonic-frameworks-text-editor
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-text-widgets:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
+      - sonic-frameworks-spell-check
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-frameworks-text-widgets
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-ui-components:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-settings
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-xml-gui
+    with:
+      package: sonic-frameworks-ui-components
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-unit-conversion:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-internationalization
+    with:
+      package: sonic-frameworks-unit-conversion
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-user-feedback:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-user-feedback
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-widgets-addons:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-widgets-addons
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
   sonic-frameworks-windowsystem:
     uses: ./.github/workflows/build-package.yml
     needs:
@@ -472,6 +1441,37 @@ jobs:
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-windowsystem
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-xml-gui:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-data-views
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-keybind
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-frameworks-xml-gui
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-frameworks-zeroconf:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-zeroconf
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -484,7 +1484,9 @@ jobs:
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-settings
       - sonic-frameworks-windowsystem
     with:
       package: sonic-gtk-theme-bridge
@@ -503,9 +1505,15 @@ jobs:
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-notifications
+      - sonic-frameworks-package
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-svg
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
     with:
       package: sonic-interface-libraries
@@ -517,13 +1525,46 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-settings
       - sonic-frameworks-windowsystem
     with:
       package: sonic-keybind-daemon
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-launcher-menu-edit:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-views
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-spell-check
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
+    with:
+      package: sonic-launcher-menu-edit
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -532,11 +1573,17 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-package
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-screen-library
@@ -547,16 +1594,73 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
+  sonic-mobile-interface:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-audio-applet-pulse
+      - sonic-file-search-ui
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
+      - sonic-frameworks-auth
+      - sonic-frameworks-bluetooth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-modemmanager
+      - sonic-frameworks-networkmanager
+      - sonic-frameworks-notifications
+      - sonic-frameworks-package
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-network-manager
+      - sonic-pipewire
+      - sonic-screen-library
+      - sonic-win
+      - sonic-workspace
+    with:
+      package: sonic-mobile-interface
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
   sonic-network-manager:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-barcode
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-modemmanager
+      - sonic-frameworks-networkmanager
+      - sonic-frameworks-notifications
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-charts
       - sonic-frameworks-quick-ui
       - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-workspace
@@ -572,8 +1676,83 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-holidays
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
     with:
       package: sonic-night-light
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-oxygen:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-decoration
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-qt-integration
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-oxygen-icons
+    with:
+      package: sonic-oxygen
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-oxygen-icons:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-oxygen-icons
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-oxygen-sounds:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-oxygen-sounds
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-partition-manager:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
+      - sonic-polkit
+    with:
+      package: sonic-partition-manager
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -584,8 +1763,96 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-internationalization
     with:
       package: sonic-pipewire
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-plasma5-support-library:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-activities
+      - sonic-frameworks-app-info
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-holidays
+      - sonic-frameworks-idle-tracker
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-networkmanager
+      - sonic-frameworks-notifications
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-unit-conversion
+      - sonic-system-monitor-library
+    with:
+      package: sonic-plasma5-support-library
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-polkit:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+    with:
+      package: sonic-polkit
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-polkit-agent:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-notifications
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-windowsystem
+      - sonic-polkit
+    with:
+      package: sonic-polkit-agent
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-pulseaudio-library:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-pulseaudio-library
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-pyside-setup:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+    with:
+      package: sonic-pyside-setup
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-qt-accounts-library:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+    with:
+      package: sonic-qt-accounts-library
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -594,12 +1861,20 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-quick-desktop-style
+      - sonic-frameworks-quick-silver-style
+      - sonic-frameworks-settings
+      - sonic-frameworks-status-notification
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
     with:
       package: sonic-qt-theme-bridge
@@ -613,8 +1888,29 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
     with:
       package: sonic-quick-image-editor
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-rdp-server:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-gui-addons
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-status-notification
+      - sonic-pipewire
+    with:
+      package: sonic-rdp-server
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -625,9 +1921,18 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-image-formats
+      - sonic-frameworks-internationalization
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
+      - sonic-plasma5-support-library
       - sonic-screen-library
     with:
       package: sonic-screen
@@ -650,15 +1955,27 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-barcode
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-notifications
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-purpose
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
+      - sonic-frameworks-status-notification
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
       - sonic-pipewire
       - sonic-quick-image-editor
     with:
@@ -673,11 +1990,21 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
       - sonic-frameworks-doctools
+      - sonic-frameworks-idle-tracker
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-notifications
+      - sonic-frameworks-package
+      - sonic-frameworks-qml-bridge
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
       - sonic-interface-libraries
       - sonic-screen-library
     with:
@@ -692,10 +2019,17 @@ jobs:
       - _setup
       - sonic-decoration
       - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-qt-integration
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
       - sonic-frameworks-silver-icons
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
     with:
       package: sonic-silver
@@ -719,9 +2053,25 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-cmake-modules
       - sonic-workspace
     with:
       package: sonic-silver-sddm
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-ssh-password-prompt:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-widgets-addons
+    with:
+      package: sonic-ssh-password-prompt
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -730,14 +2080,74 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-device-integration
       - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-qml-bridge
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
     with:
       package: sonic-system-info
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-system-log:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-archive
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-views
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-ui
+      - sonic-frameworks-text-widgets
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-xml-gui
+    with:
+      package: sonic-system-log
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-system-monitor:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-charts
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-windowsystem
+      - sonic-system-monitor-library
+      - sonic-system-stats
+    with:
+      package: sonic-system-monitor
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -746,12 +2156,39 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-package
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-charts
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
     with:
       package: sonic-system-monitor-library
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-system-stats:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-networkmanager
+      - sonic-system-monitor-library
+    with:
+      package: sonic-system-stats
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -760,16 +2197,30 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
+      - sonic-frameworks-bookmarks
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-notification-settings
+      - sonic-frameworks-notifications
+      - sonic-frameworks-pseudo-terminal
+      - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
+      - sonic-frameworks-text-widgets
+      - sonic-frameworks-ui-components
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
     with:
       package: sonic-terminal
       branch: ${{ inputs.branch }}
@@ -780,14 +2231,100 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
+      - sonic-frameworks-autocomplete
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-root-shell
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-ui-components
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
     with:
       package: sonic-terminal-tools
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-thunderbolt:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-notifications
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings-utils
+    with:
+      package: sonic-thunderbolt
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-tv-interface:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-activities
+      - sonic-file-search-ui
+      - sonic-frameworks-app-info
+      - sonic-frameworks-bluetooth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-notifications
+      - sonic-frameworks-package
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+      - sonic-screen-library
+      - sonic-workspace
+    with:
+      package: sonic-tv-interface
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-vault:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-activities
+      - sonic-frameworks-app-info
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-networkmanager
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-widgets-addons
+      - sonic-interface-libraries
+      - sonic-system-monitor-library
+      - sonic-workspace
+    with:
+      package: sonic-vault
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -796,14 +2333,25 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-dbus
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-keybind
+      - sonic-frameworks-progress-ui
       - sonic-frameworks-quick-ui
       - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
+      - sonic-frameworks-user-feedback
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-network-manager
+      - sonic-plasma5-support-library
     with:
       package: sonic-welcome-center
       branch: ${{ inputs.branch }}
@@ -816,16 +2364,29 @@ jobs:
       - _setup
       - sonic-activities
       - sonic-decoration
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
-      - sonic-frameworks-idle-tracker
+      - sonic-frameworks-internationalization
       - sonic-frameworks-keybind
+      - sonic-frameworks-notifications
+      - sonic-frameworks-package
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-charts
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
       - sonic-interface-libraries
       - sonic-keybind-daemon
       - sonic-night-light
@@ -843,28 +2404,63 @@ jobs:
       - _setup
       - sonic-activities
       - sonic-activities-stats
+      - sonic-activity-manager-daemon
+      - sonic-daemon
+      - sonic-exiv2-library
+      - sonic-file-search-ui
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
+      - sonic-frameworks-archive
       - sonic-frameworks-auth
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-barcode
+      - sonic-frameworks-bookmarks
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
       - sonic-frameworks-doctools
+      - sonic-frameworks-file-search
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-holidays
       - sonic-frameworks-icon-themes
       - sonic-frameworks-idle-tracker
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-io-extras
       - sonic-frameworks-io-fuse
       - sonic-frameworks-keybind
+      - sonic-frameworks-keyring
+      - sonic-frameworks-networkmanager
+      - sonic-frameworks-notifications
+      - sonic-frameworks-package
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-charts
       - sonic-frameworks-quick-ui
       - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-runner
+      - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-status-notification
+      - sonic-frameworks-svg
+      - sonic-frameworks-text-editor
+      - sonic-frameworks-text-widgets
+      - sonic-frameworks-ui-components
+      - sonic-frameworks-user-feedback
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
       - sonic-interface-libraries
       - sonic-night-light
       - sonic-pipewire
       - sonic-screenlocker
       - sonic-system-monitor-library
+      - sonic-system-stats
       - sonic-terminal-tools
       - sonic-win
     with:
@@ -877,17 +2473,35 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-holidays
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-networkmanager
+      - sonic-frameworks-notifications
+      - sonic-frameworks-package
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-qml-bridge
       - sonic-frameworks-quick-ui
       - sonic-frameworks-quick-ui-addons
       - sonic-frameworks-runner
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-spell-check
+      - sonic-frameworks-svg
+      - sonic-frameworks-unit-conversion
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
       - sonic-interface-libraries
       - sonic-win
       - sonic-workspace
@@ -908,33 +2522,67 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
+  sonic-write-daemon:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-notifications
+      - sonic-frameworks-pseudo-terminal
+    with:
+      package: sonic-write-daemon
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
   sonicde-meta:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
       - sonic-activities-stats
+      - sonic-activity-manager-daemon
       - sonic-audio-applet-pulse
       - sonic-bluetooth-runtime
       - sonic-browser-integration
+      - sonic-decoration
       - sonic-desktop-interface
+      - sonic-disks
       - sonic-dr-robotnik
       - sonic-ecco
-      - sonic-frameworks-quick-silver-style
+      - sonic-file-search-ui
+      - sonic-firewall
+      - sonic-frameworks-keyring-pam
       - sonic-gtk-theme-bridge
+      - sonic-keybind-daemon
+      - sonic-launcher-menu-edit
       - sonic-login-manager
       - sonic-network-manager
       - sonic-night-light
+      - sonic-oxygen
+      - sonic-oxygen-sounds
       - sonic-pipewire
+      - sonic-polkit-agent
       - sonic-qt-theme-bridge
+      - sonic-rdp-server
       - sonic-screen
       - sonic-screenies
+      - sonic-screenlocker
       - sonic-silver
       - sonic-silver-gtk
+      - sonic-ssh-password-prompt
       - sonic-system-info
+      - sonic-system-monitor
+      - sonic-system-stats
       - sonic-terminal
       - sonic-terminal-tools
+      - sonic-thunderbolt
+      - sonic-vault
       - sonic-welcome-center
       - sonic-workspace-addons
+      - sonic-write-daemon
       - xdg-desktop-portal-sonicde
     with:
       package: sonicde-meta
@@ -946,13 +2594,23 @@ jobs:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
+      - sonic-frameworks-app-info
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-views
       - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-io-fuse
       - sonic-frameworks-keybind
+      - sonic-frameworks-notifications
+      - sonic-frameworks-qml-bridge
       - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-status-notification
       - sonic-frameworks-windowsystem
       - sonic-pipewire
       - sonic-workspace
@@ -965,46 +2623,117 @@ jobs:
   all-packages:
     runs-on: ubuntu-24.04
     needs:
+      - sonic-accounts-integration
       - sonic-activities
       - sonic-activities-stats
+      - sonic-activity-manager-daemon
       - sonic-audio-applet-pulse
       - sonic-bluetooth-runtime
       - sonic-breeze
       - sonic-breeze-sddm
       - sonic-browser-integration
+      - sonic-crypto-library
+      - sonic-daemon
       - sonic-decoration
       - sonic-desktop-interface
+      - sonic-disks
       - sonic-dr-robotnik
+      - sonic-drawing-tablet
       - sonic-ecco
+      - sonic-exiv2-library
+      - sonic-file-search-ui
+      - sonic-firewall
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-app-info
+      - sonic-frameworks-archive
       - sonic-frameworks-auth
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-barcode
+      - sonic-frameworks-bluetooth
+      - sonic-frameworks-bookmarks
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-color-scheme
       - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
+      - sonic-frameworks-data-views
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
       - sonic-frameworks-doctools
+      - sonic-frameworks-feeds
+      - sonic-frameworks-file-metadata
+      - sonic-frameworks-file-search
       - sonic-frameworks-gui-addons
+      - sonic-frameworks-holidays
       - sonic-frameworks-icon-themes
       - sonic-frameworks-idle-tracker
+      - sonic-frameworks-image-formats
+      - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-io-extras
       - sonic-frameworks-io-fuse
       - sonic-frameworks-keybind
+      - sonic-frameworks-keyring
+      - sonic-frameworks-keyring-pam
+      - sonic-frameworks-modemmanager
+      - sonic-frameworks-networkmanager
+      - sonic-frameworks-notification-settings
+      - sonic-frameworks-notifications
       - sonic-frameworks-open-collab
+      - sonic-frameworks-package
+      - sonic-frameworks-progress-ui
+      - sonic-frameworks-pseudo-terminal
+      - sonic-frameworks-purpose
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-qt-integration
+      - sonic-frameworks-quick-charts
+      - sonic-frameworks-quick-desktop-style
       - sonic-frameworks-quick-silver-style
       - sonic-frameworks-quick-ui
       - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-root-shell
       - sonic-frameworks-runner
+      - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
+      - sonic-frameworks-settings-utils
       - sonic-frameworks-silver-icons
+      - sonic-frameworks-spell-check
+      - sonic-frameworks-sso
+      - sonic-frameworks-status-notification
+      - sonic-frameworks-svg
+      - sonic-frameworks-syntax-highlighting
+      - sonic-frameworks-text-codec
+      - sonic-frameworks-text-editor
+      - sonic-frameworks-text-widgets
+      - sonic-frameworks-ui-components
+      - sonic-frameworks-unit-conversion
+      - sonic-frameworks-user-feedback
+      - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-frameworks-xml-gui
+      - sonic-frameworks-zeroconf
       - sonic-gtk-theme-bridge
       - sonic-interface-libraries
       - sonic-keybind-daemon
+      - sonic-launcher-menu-edit
       - sonic-login-manager
+      - sonic-mobile-interface
       - sonic-network-manager
       - sonic-night-light
+      - sonic-oxygen
+      - sonic-oxygen-icons
+      - sonic-oxygen-sounds
+      - sonic-partition-manager
       - sonic-pipewire
+      - sonic-plasma5-support-library
+      - sonic-polkit
+      - sonic-polkit-agent
+      - sonic-pulseaudio-library
+      - sonic-pyside-setup
+      - sonic-qt-accounts-library
       - sonic-qt-theme-bridge
       - sonic-quick-image-editor
+      - sonic-rdp-server
       - sonic-screen
       - sonic-screen-library
       - sonic-screenies
@@ -1012,15 +2741,23 @@ jobs:
       - sonic-silver
       - sonic-silver-gtk
       - sonic-silver-sddm
+      - sonic-ssh-password-prompt
       - sonic-system-info
+      - sonic-system-log
+      - sonic-system-monitor
       - sonic-system-monitor-library
+      - sonic-system-stats
       - sonic-terminal
       - sonic-terminal-tools
+      - sonic-thunderbolt
+      - sonic-tv-interface
+      - sonic-vault
       - sonic-welcome-center
       - sonic-win
       - sonic-workspace
       - sonic-workspace-addons
       - sonic-workspace-wallpapers
+      - sonic-write-daemon
       - sonicde-meta
       - xdg-desktop-portal-sonicde
     steps:
