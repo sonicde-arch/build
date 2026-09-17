@@ -52,8 +52,14 @@ trap cleanup 0
 trap 'cleanup; exit 1' HUP INT TERM
 log_open
 
-cat > "$tmpdir"/base.toml <<-EOF
+cat >"$tmpdir"/keyfile.toml <<-EOF
+	[keys]
+	github = "$GITHUB_TOKEN"
+EOF
+
+cat >"$tmpdir"/base.toml <<-EOF
 	[__config__]
+	keyfile = "$tmpdir/keyfile.toml"
 	oldver = "$tmpdir/oldver"
 	newver = "$tmpdir/newver"
 EOF
