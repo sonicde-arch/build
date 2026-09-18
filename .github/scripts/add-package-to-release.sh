@@ -62,8 +62,12 @@ while : ; do
 
 	inf 'Adding packages to database %s' "$revname"
 	repodb_add_packages "$DOCKER_IMAGE" "$revname.$CEXT" ./*.pkg."$CEXT"
-	rm -f "$revname".*.old
 
+	ls -l
+
+	rm -f "$revname"*.old
+
+	inf 'Uploading database %s' "$revname"
 	if gh release upload --repo "$repo" "$tag" "$revname"* ; then
 		inf 'Uploaded database %s' "$revname"
 		break
