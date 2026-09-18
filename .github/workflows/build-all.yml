@@ -625,6 +625,7 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
+      - sonic-pyside-setup
     with:
       package: sonic-frameworks-core-addons
       branch: ${{ inputs.branch }}
@@ -754,6 +755,7 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
+      - sonic-pyside-setup
     with:
       package: sonic-frameworks-gui-addons
       branch: ${{ inputs.branch }}
@@ -980,6 +982,7 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-settings
+      - sonic-pyside-setup
     with:
       package: sonic-frameworks-notifications
       branch: ${{ inputs.branch }}
@@ -1020,6 +1023,7 @@ jobs:
       - sonic-frameworks-core-addons
       - sonic-frameworks-notifications
       - sonic-frameworks-widgets-addons
+      - sonic-pyside-setup
     with:
       package: sonic-frameworks-progress-ui
       branch: ${{ inputs.branch }}
@@ -1294,6 +1298,7 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-windowsystem
+      - sonic-pyside-setup
     with:
       package: sonic-frameworks-status-notification
       branch: ${{ inputs.branch }}
@@ -1406,6 +1411,7 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-internationalization
+      - sonic-pyside-setup
     with:
       package: sonic-frameworks-unit-conversion
       branch: ${{ inputs.branch }}
@@ -1428,6 +1434,7 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
+      - sonic-pyside-setup
     with:
       package: sonic-frameworks-widgets-addons
       branch: ${{ inputs.branch }}
@@ -1459,6 +1466,7 @@ jobs:
       - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
       - sonic-frameworks-widgets-addons
+      - sonic-pyside-setup
     with:
       package: sonic-frameworks-xml-gui
       branch: ${{ inputs.branch }}
