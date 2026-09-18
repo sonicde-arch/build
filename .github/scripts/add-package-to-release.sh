@@ -53,23 +53,20 @@ gh release upload --repo "$repo" "$tag" -- *.pkg.*
 attempt=1
 maxtries=20
 while : ; do
-	oldname=$(gh_release_get_asset_maxrev "$repo" "$tag" "$dbname.db")
+	olddb=$(gh_release_get_asset_maxrev "$repo" "$tag" "$dbname.db")
 
-	inf 'Downloading package database %s' "$oldname"
-	gh release download --clobber --repo "$repo" "$tag" --pattern "$oldname*"
-	revname=$(gh_release_inc_asset_revision "$oldname")
-	mv "$oldname.$CEXT" "$revname.$CEXT"
+	inf 'Downloading package database %s' "$olddb"
+	gh release download --clobber --repo "$repo" "$tag" --pattern "$olddb*"
+	newdb=$(gh_release_inc_asset_revision "$olddb")
+	mv "$olddb.$CEXT" "$newdb.$CEXT"
 
-	inf 'Adding packages to database %s' "$revname"
-	repodb_add_packages "$DOCKER_IMAGE" "$revname.$CEXT" ./*.pkg."$CEXT"
+	inf 'Adding packages to database %s' "$newdb"
+	repodb_add_packages "$DOCKER_IMAGE" "$newdb.$CEXT" ./*.pkg."$CEXT"
+	rm -f "$newdb"*.old
 
-	ls -l
-
-	rm -f "$revname"*.old
-
-	inf 'Uploading database %s' "$revname"
-	if gh release upload --repo "$repo" "$tag" "$revname"* ; then
-		inf 'Uploaded database %s' "$revname"
+	inf 'Uploading database %s*' "$newdb"
+	if gh release upload --repo "$repo" "$tag" "$newdb"* ; then
+		inf 'Uploaded database %s*' "$newdb"
 		break
 	fi
 	if [ "$attempt" -ge "$maxtries" ] ; then
@@ -83,4 +80,5 @@ done
 
 inf 'Awaiting availability of assets'
 gh_release_await_assets "$repo" "$tag" "$assets
-$revname"
+$newdb
+$newdb.$CEXT"
