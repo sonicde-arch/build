@@ -47,8 +47,10 @@ log_open
 cd "$package_dir"
 
 assets=$(ls -1 -- *.pkg.*)
-inf 'Uploading packages:\n%s' "$assets"
-gh release upload --repo "$repo" "$tag" -- *.pkg.*
+if [ "${REGISTER_NEEDED:-false}" != 'true' ] ; then
+	inf 'Uploading packages:\n%s' "$assets"
+	gh release upload --repo "$repo" "$tag" -- *.pkg.*
+fi
 
 attempt=1
 maxtries=20
