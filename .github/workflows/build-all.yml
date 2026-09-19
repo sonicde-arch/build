@@ -625,7 +625,7 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
-      - sonic-pyside-setup
+      - sonic-pyside
     with:
       package: sonic-frameworks-core-addons
       branch: ${{ inputs.branch }}
@@ -755,7 +755,7 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
-      - sonic-pyside-setup
+      - sonic-pyside
     with:
       package: sonic-frameworks-gui-addons
       branch: ${{ inputs.branch }}
@@ -982,7 +982,7 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-settings
-      - sonic-pyside-setup
+      - sonic-pyside
     with:
       package: sonic-frameworks-notifications
       branch: ${{ inputs.branch }}
@@ -1023,7 +1023,7 @@ jobs:
       - sonic-frameworks-core-addons
       - sonic-frameworks-notifications
       - sonic-frameworks-widgets-addons
-      - sonic-pyside-setup
+      - sonic-pyside
     with:
       package: sonic-frameworks-progress-ui
       branch: ${{ inputs.branch }}
@@ -1287,7 +1287,7 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-windowsystem
-      - sonic-pyside-setup
+      - sonic-pyside
     with:
       package: sonic-frameworks-status-notification
       branch: ${{ inputs.branch }}
@@ -1400,7 +1400,7 @@ jobs:
       - _setup
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-internationalization
-      - sonic-pyside-setup
+      - sonic-pyside
     with:
       package: sonic-frameworks-unit-conversion
       branch: ${{ inputs.branch }}
@@ -1423,7 +1423,7 @@ jobs:
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
-      - sonic-pyside-setup
+      - sonic-pyside
     with:
       package: sonic-frameworks-widgets-addons
       branch: ${{ inputs.branch }}
@@ -1455,7 +1455,7 @@ jobs:
       - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
       - sonic-frameworks-widgets-addons
-      - sonic-pyside-setup
+      - sonic-pyside
     with:
       package: sonic-frameworks-xml-gui
       branch: ${{ inputs.branch }}
@@ -1834,12 +1834,12 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
-  sonic-pyside-setup:
+  sonic-pyside:
     uses: ./.github/workflows/build-package.yml
     needs:
       - _setup
     with:
-      package: sonic-pyside-setup
+      package: sonic-pyside
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -2736,7 +2736,7 @@ jobs:
       - sonic-polkit
       - sonic-polkit-agent
       - sonic-pulseaudio-library
-      - sonic-pyside-setup
+      - sonic-pyside
       - sonic-qt-accounts-library
       - sonic-qt-theme-bridge
       - sonic-quick-image-editor
