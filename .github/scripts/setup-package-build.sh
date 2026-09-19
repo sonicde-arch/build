@@ -40,6 +40,7 @@ gh repo clone "$PACKAGES_REPOSITORY" "$GITHUB_WORKSPACE"/pkgbuilds -- \
 test "$BUILD_NEEDED" = 'true' && exit 0
 
 wildcards=$(pkgbuild_pkgnames_to_wildcards "$package_dir")
+pkgnames=$(pkgbuild_pkgnames "$package_dir")
 
 set +e
 released=$(gh_release_filter_assets "$REPOSITORY" "$CURRENT_TAG" "$wildcards")
@@ -59,4 +60,19 @@ fi
 if [ -z "$released" ] && [ -z "$staged" ] ; then
 	printf 'Setting BUILD_NEEDED to true\n'
 	gh_env_set BUILD_NEEDED 'true'
+fi
+
+if [ "$staged" ] ; then
+	tmpdir=$(mktemp -d)
+	trap 'rm -rf "$tmpdir"; log_close' 0
+	dbarchive="$repo_db.tar.zst"
+	gh release download --repo "$REPOSITORY" "$STAGING_TAG" \
+		--dir "$tmpdir" --pattern "$dbarchive"
+
+	if ! repodb_has_pkgnames "$tmpdir/$dbarchive" "$pkgnames" ; then
+		printf 'Adding staged assets missing from %s\n' "$repo_db"
+		gh_release_download_assets "$REPOSITORY" "$STAGING_TAG" "$wildcards"
+		mv -- ./*.pkg.* "$package_dir"/
+		gh_env_set REGISTER_NEEDED 'true'
+	fi
 fi

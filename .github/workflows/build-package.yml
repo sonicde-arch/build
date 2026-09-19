@@ -99,7 +99,7 @@ jobs:
           tmpfs: true
 
       - name: Add packages to release
-        if: ${{ env.BUILD_NEEDED == 'true' }}
+        if: ${{ env.BUILD_NEEDED == 'true' || env.REGISTER_NEEDED == 'true' }}
         run: |
           . setup-build-env.sh # reauthenticate
           add-package-to-release.sh "$REPOSITORY" "$STAGING_TAG" \
