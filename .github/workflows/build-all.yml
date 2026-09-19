@@ -1892,25 +1892,26 @@ jobs:
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
-  sonic-rdp-server:
-    uses: ./.github/workflows/build-package.yml
-    needs:
-      - _setup
-      - sonic-frameworks-cmake-modules
-      - sonic-frameworks-core-addons
-      - sonic-frameworks-crash-handler
-      - sonic-frameworks-gui-addons
-      - sonic-frameworks-internationalization
-      - sonic-frameworks-quick-ui-addons
-      - sonic-frameworks-settings
-      - sonic-frameworks-settings-utils
-      - sonic-frameworks-status-notification
-      - sonic-pipewire
-    with:
-      package: sonic-rdp-server
-      branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
-    secrets: inherit
+  # sonic-rdp-server is not ready to build yet.
+  # sonic-rdp-server:
+  #   uses: ./.github/workflows/build-package.yml
+  #   needs:
+  #     - _setup
+  #     - sonic-frameworks-cmake-modules
+  #     - sonic-frameworks-core-addons
+  #     - sonic-frameworks-crash-handler
+  #     - sonic-frameworks-gui-addons
+  #     - sonic-frameworks-internationalization
+  #     - sonic-frameworks-quick-ui-addons
+  #     - sonic-frameworks-settings
+  #     - sonic-frameworks-settings-utils
+  #     - sonic-frameworks-status-notification
+  #     - sonic-pipewire
+  #   with:
+  #     package: sonic-rdp-server
+  #     branch: ${{ inputs.branch }}
+  #     build-needed: ${{ inputs.build-needed }}
+  #   secrets: inherit
 
   sonic-screen:
     uses: ./.github/workflows/build-package.yml
@@ -2574,7 +2575,7 @@ jobs:
       - sonic-pipewire
       - sonic-polkit-agent
       - sonic-qt-theme-bridge
-      - sonic-rdp-server
+      # - sonic-rdp-server
       - sonic-screen
       - sonic-screenies
       - sonic-screenlocker
@@ -2740,7 +2741,7 @@ jobs:
       - sonic-qt-accounts-library
       - sonic-qt-theme-bridge
       - sonic-quick-image-editor
-      - sonic-rdp-server
+      # - sonic-rdp-server
       - sonic-screen
       - sonic-screen-library
       - sonic-screenies
