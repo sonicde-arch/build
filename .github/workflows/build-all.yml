@@ -179,9 +179,9 @@ jobs:
       - sonic-frameworks-quick-ui
       - sonic-frameworks-settings
       - sonic-frameworks-settings-utils
-      - sonic-frameworks-silver-icons
       - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-silver-icons
     with:
       package: sonic-breeze
       branch: ${{ inputs.branch }}
@@ -782,8 +782,8 @@ jobs:
       - sonic-frameworks-color-scheme
       - sonic-frameworks-internationalization
       - sonic-frameworks-settings
-      - sonic-frameworks-silver-icons
       - sonic-frameworks-widgets-addons
+      - sonic-silver-icons
     with:
       package: sonic-frameworks-icon-themes
       branch: ${{ inputs.branch }}
@@ -1256,17 +1256,6 @@ jobs:
       - sonic-frameworks-xml-gui
     with:
       package: sonic-frameworks-settings-utils
-      branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
-    secrets: inherit
-
-  sonic-frameworks-silver-icons:
-    uses: ./.github/workflows/build-package.yml
-    needs:
-      - _setup
-      - sonic-frameworks-cmake-modules
-    with:
-      package: sonic-frameworks-silver-icons
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -2036,9 +2025,9 @@ jobs:
       - sonic-frameworks-quick-ui
       - sonic-frameworks-settings
       - sonic-frameworks-settings-utils
-      - sonic-frameworks-silver-icons
       - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
+      - sonic-silver-icons
     with:
       package: sonic-silver
       branch: ${{ inputs.branch }}
@@ -2053,6 +2042,17 @@ jobs:
       - sonic-silver
     with:
       package: sonic-silver-gtk
+      branch: ${{ inputs.branch }}
+      build-needed: ${{ inputs.build-needed }}
+    secrets: inherit
+
+  sonic-silver-icons:
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-silver-icons
       branch: ${{ inputs.branch }}
       build-needed: ${{ inputs.build-needed }}
     secrets: inherit
@@ -2704,7 +2704,6 @@ jobs:
       - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
       - sonic-frameworks-settings-utils
-      - sonic-frameworks-silver-icons
       - sonic-frameworks-spell-check
       - sonic-frameworks-sso
       - sonic-frameworks-status-notification
@@ -2748,6 +2747,7 @@ jobs:
       - sonic-screenlocker
       - sonic-silver
       - sonic-silver-gtk
+      - sonic-silver-icons
       - sonic-silver-sddm
       - sonic-ssh-password-prompt
       - sonic-system-info
