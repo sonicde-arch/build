@@ -121,8 +121,10 @@ grep -vFxf existing.csv db-assets.csv > db-obsolete.csv || :
 grep -vFxf db-assets.csv existing.csv > db-missing.csv || :
 grep -vFxf copy-assets.csv db-missing.csv > download-assets.csv || :
 
-tail -n -1 -- *.csv
-
+for file in *.csv; do
+	printf '\n%s\n' "$file"
+	cat "$file"
+done
 
 inf 'Downloading and copying assets'
 
