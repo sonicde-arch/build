@@ -11,11 +11,11 @@ set -eu
 
 # Arguments
 
-repo=$1          # repository for storing the binaries
-reltag=$2        # released tag
-stagetag=$3      # staged tag
-nexttag=$4       # next tag
-force=$5         # force the build flag
+repo=$1     # repository for storing the binaries
+reltag=$2   # released release tag
+stagetag=$3 # staged release tag
+nexttag=$4  # next release tag
+force=$5    # force the build flag
 
 
 # Environment
@@ -150,9 +150,10 @@ test -s db-missing.csv -o -s db-obsolete.csv &&
 
 inf 'Emitting packages to build'
 
+sed 's/$/|/' build-assets.csv | grep -Ff - assets2bases.csv |
+	cut -d '|' -f 2 | sort -u > build-bases.csv || :
+
 echo "build-bases:"
 cat build-bases.csv
 
-sed 's/$/|/' build-assets.csv | grep -Ff - assets2bases.csv |
-	cut -d '|' -f 2 | sort -u > build-bases.csv || :
 gh_output 'packages' "$(jq -Rs 'split("\n")[:-1]' < build-bases.csv)"
