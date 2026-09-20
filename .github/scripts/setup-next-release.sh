@@ -62,6 +62,7 @@ trap 'exit 1' HUP INT TERM
 log_open
 
 dbname=$REPO_DB_NAME
+tmp=$(mktemp -d)
 
 gh repo clone "$PACKAGES_REPOSITORY" . -- \
 	--branch "$BRANCH" --depth 1 --single-branch
@@ -78,7 +79,8 @@ if ! gh release view --repo "$repo" "$stagetag" 2>$NUL ; then
 	gh release upload --repo "$repo" "$stagetag" ./*.db*
 fi
 
-printf '%s\n' */PKGBUILD | cut -d '/' -f 1 > bases.csv
+# shellcheck disable=SC2012
+ls -1 -- */PKGBUILD | cut -d '/' -f 1 > bases.csv || :
 if [ "$force" = true ] ; then
 	gh_output 'packages' "$(jq -Rs 'split("\n")[:-1]' < bases.csv)"
 	exit 0
@@ -116,9 +118,9 @@ grep -vFxf released.csv missing.csv > build-assets.csv || :
 grep -Fxf released.csv missing.csv > copy-assets.csv || :
 
 dbasset=$(gh_release_get_asset_maxrev "$repo" "$stagetag" "$dbname.db")
-gh release download --repo "$repo" "$stagetag" --pattern "$dbasset*"
-
-tar -tf "$dbasset" | sed "s|/.*||; s|$|.$CEXT|" | sort -u > db-assets.csv
+gh release download --clobber --repo "$repo" "$stagetag" --pattern "$dbasset*"
+tar -xf "$dbasset" -C "$tmp"
+find "$tmp" -name 'desc' -exec sed -n '2p' {} \; | sort -u > db-assets.csv
 
 echo "db-assets:"
 cat db-assets.csv
@@ -132,8 +134,8 @@ inf 'Downloading and copying assets'
 
 download_assets "$repo" "$reltag" copy-assets.csv
 download_assets "$repo" "$stagetag" download-assets.csv
-# shellcheck disable=SC2046
-upload_assets "$repo" "$stagetag" $(cat copy-assets.csv)
+test -s copy-assets.csv &&
+	xargs -r gh release upload --repo "$repo" "$stagetag" < copy-assets.csv
 
 
 inf 'Ensuring database consistency'
@@ -143,8 +145,8 @@ inf 'Missing assets:\n%s\n' "$(cat db-missing.csv)"
 revname=$(gh_release_inc_asset_revision "$dbasset")
 mv "$dbasset.$CEXT" "$revname.$CEXT"
 docker exec --user "$(id -u):$(id -g)" builder sh -c '
-	test -s db-obsolete.csv && xargs -r repo-remove "$1" < db-obsolete.csv
-	test -s db-missing.csv && xargs -r repo-add "$1" < db-missing.csv
+	xargs -r repo-remove "$1" < db-obsolete.csv
+	xargs -r repo-add "$1" < db-missing.csv
 ' _ "$revname.$CEXT"
 
 test -s db-missing.csv -o -s db-obsolete.csv &&
