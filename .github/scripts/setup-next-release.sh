@@ -95,8 +95,8 @@ docker exec --user "$(id -u):$(id -g)" builder sh -c '
 		pkgbase=${pkgbuild%/*}
 		cd "$pkgbase"
 		for asset in $(makepkg --packagelist); do
-			printf "%s\n" "$asset" >> assets.csv
-			printf "%s|%s\n" "$asset" "$pkgbase" >> assets2bases.csv
+			printf "%s\n" "$asset" >> ../assets.csv
+			printf "%s|%s\n" "$asset" "$pkgbase" >> ../assets2bases.csv
 		done
 		cd ..
 	done
@@ -104,6 +104,12 @@ docker exec --user "$(id -u):$(id -g)" builder sh -c '
 
 list_assets "$repo" "$stagetag" > staged.csv
 list_assets "$repo" "$reltag" > released.csv 2>$NUL || :
+
+echo 'staged:'
+cat staged.csv
+
+echo 'released:'
+released.csv
 
 cat staged.csv released.csv | grep -Fxf assets.csv | sort -u > existing.csv
 grep -vFxf staged.csv assets.csv > missing.csv
