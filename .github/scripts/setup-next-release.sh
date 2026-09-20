@@ -39,7 +39,7 @@ list_assets() {
 }
 
 download_assets() {
-	xargs -P 4 -I {} gh release download --repo "$1" "$2" --pattern '{}' < "$3"
+	xargs -r -P 4 -I {} gh release download --repo "$1" "$2" --pattern '{}' < "$3"
 }
 
 upload_assets() {
@@ -143,8 +143,8 @@ inf 'Missing assets:\n%s\n' "$(cat db-missing.csv)"
 revname=$(gh_release_inc_asset_revision "$dbasset")
 mv "$dbasset.$CEXT" "$revname.$CEXT"
 docker exec --user "$(id -u):$(id -g)" builder sh -c '
-	test -s db-obsolete.csv && xargs repo-remove "$1" < db-obsolete.csv
-	test -s db-missing.csv && xargs repo-add "$1" < db-missing.csv
+	test -s db-obsolete.csv && xargs -r repo-remove "$1" < db-obsolete.csv
+	test -s db-missing.csv && xargs -r repo-add "$1" < db-missing.csv
 ' _ "$revname.$CEXT"
 
 test -s db-missing.csv -o -s db-obsolete.csv &&
