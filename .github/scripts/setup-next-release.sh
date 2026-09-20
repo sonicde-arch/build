@@ -94,7 +94,7 @@ docker exec --user "$(id -u):$(id -g)" builder sh -c '
 		test -f "$pkgbuild" || continue
 		pkgbase=${pkgbuild%/*}
 		cd "$pkgbase"
-		for asset in $(makepkg --packagelist -p "$pkgbuild"); do
+		for asset in $(makepkg --packagelist); do
 			printf "%s\n" "$asset" >> assets.csv
 			printf "%s|%s\n" "$asset" "$pkgbase" >> assets2bases.csv
 		done
