@@ -78,7 +78,7 @@ gh repo clone "$PACKAGES_REPOSITORY" . -- \
 gh_release_delete "$repo" "$nexttag" 2>$NUL || : # cleanup
 test "$force" = true && gh_release_delete "$repo" "$stagetag" 2>$NUL || :
 
-if ! gh release view --repo "$repo" "$stagetag" 2>$NUL ; then
+if ! gh release view --repo "$repo" "$stagetag" 1>$NUL 2>&1 ; then
 	inf 'Creating new release %s@%s' "$repo" "$stagetag"
 	revname="$REPO_DB_NAME-r0000.db"
 	tar --zstd -cf "$revname" -T /dev/null
@@ -131,6 +131,7 @@ for file in *.csv; do
 	cat "$file"
 done
 
+
 inf 'Downloading and copying assets'
 
 sed 's/$/*/g' copy-assets.csv > copy-assets-star.csv # for *.sig etc.
@@ -156,6 +157,7 @@ if [ -s db-missing.csv ] || [ -s db-obsolete.csv ] ; then
 			xargs -r repo-remove "$1"
 		xargs -r repo-add "$1" < db-missing.csv
 	' _ "$revname.$CEXT"
+	rm "$revname"*.old
 	upload_assets "$repo" "$stagetag" "$revname"*
 fi
 
