@@ -6,7 +6,7 @@ name: Build All and Publish
 on:
   workflow_dispatch:
     inputs:
-      build-needed:
+      force-build:
         description: Force the build of all packages
         type: boolean
         default: false
@@ -28,6 +28,8 @@ env:
 jobs:
   _setup:
     runs-on: ubuntu-24.04
+    outputs:
+      packages: ${{ steps.setup.outputs.packages }}
     steps:
       - name: Setup workspace
         uses: callmetango/setup-workspace@HEAD
@@ -35,15 +37,21 @@ jobs:
           inputs: ${{ toJSON(inputs) }}
           vars: ${{ toJSON(vars) }}
 
-      - name: Draft new release
+      - name: Setup next release
+        id: setup
         env:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         run: |
+          set -eu
           . setup-build-env.sh
-          draft-new-release.sh "$REPOSITORY" "$STAGING_TAG" "$BUILD_NEEDED"
+          setup-next-release.sh "$REPOSITORY" "$CURRENT_TAG" "$STAGING_TAG" \
+              "$NEXT_TAG" "$FORCE_BUILD"
 
   sonic-activities:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-activities')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -51,11 +59,13 @@ jobs:
     with:
       package: sonic-activities
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-activities-stats:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-activities-stats')
     needs:
       - _setup
       - sonic-activities
@@ -63,11 +73,13 @@ jobs:
     with:
       package: sonic-activities-stats
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-audio-applet-pulse:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-audio-applet-pulse')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -81,11 +93,13 @@ jobs:
     with:
       package: sonic-audio-applet-pulse
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-bluetooth-runtime:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-bluetooth-runtime')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -98,11 +112,13 @@ jobs:
     with:
       package: sonic-bluetooth-runtime
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-breeze:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-breeze')
     needs:
       - _setup
       - sonic-decoration
@@ -118,11 +134,13 @@ jobs:
     with:
       package: sonic-breeze
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-breeze-sddm:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-breeze-sddm')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -130,11 +148,13 @@ jobs:
     with:
       package: sonic-breeze-sddm
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-browser-integration:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-browser-integration')
     needs:
       - _setup
       - sonic-activities
@@ -145,22 +165,26 @@ jobs:
     with:
       package: sonic-browser-integration
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-decoration:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-decoration')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-decoration
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-desktop-interface:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-desktop-interface')
     needs:
       - _setup
       - sonic-activities
@@ -186,11 +210,13 @@ jobs:
     with:
       package: sonic-desktop-interface
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-dr-robotnik:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-dr-robotnik')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -202,11 +228,13 @@ jobs:
     with:
       package: sonic-dr-robotnik
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-ecco:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-ecco')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -222,11 +250,13 @@ jobs:
     with:
       package: sonic-ecco
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-auth:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-auth')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -235,21 +265,25 @@ jobs:
     with:
       package: sonic-frameworks-auth
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-cmake-modules:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-cmake-modules')
     needs:
       - _setup
     with:
       package: sonic-frameworks-cmake-modules
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-color-scheme:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-color-scheme')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -257,44 +291,52 @@ jobs:
     with:
       package: sonic-frameworks-color-scheme
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-core-addons:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-core-addons')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-core-addons
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-doctools:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-doctools')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-doctools
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-gui-addons:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-gui-addons')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-gui-addons
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-icon-themes:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-icon-themes')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -303,22 +345,26 @@ jobs:
     with:
       package: sonic-frameworks-icon-themes
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-idle-tracker:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-idle-tracker')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-idle-tracker
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-io:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -331,11 +377,13 @@ jobs:
     with:
       package: sonic-frameworks-io
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-io-extras:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io-extras')
     needs:
       - _setup
       - sonic-activities
@@ -347,11 +395,13 @@ jobs:
     with:
       package: sonic-frameworks-io-extras
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-io-fuse:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io-fuse')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -360,33 +410,39 @@ jobs:
     with:
       package: sonic-frameworks-io-fuse
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-keybind:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-keybind')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-keybind
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-open-collab:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-open-collab')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-open-collab
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-quick-silver-style:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-silver-style')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -397,22 +453,26 @@ jobs:
     with:
       package: sonic-frameworks-quick-silver-style
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-quick-ui:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-ui')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-quick-ui
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-quick-ui-addons:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-ui-addons')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -425,11 +485,13 @@ jobs:
     with:
       package: sonic-frameworks-quick-ui-addons
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-runner:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-runner')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -439,11 +501,13 @@ jobs:
     with:
       package: sonic-frameworks-runner
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-settings-ui:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-settings-ui')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -452,22 +516,26 @@ jobs:
     with:
       package: sonic-frameworks-settings-ui
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-frameworks-windowsystem:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-windowsystem')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-frameworks-windowsystem
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-gtk-theme-bridge:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-gtk-theme-bridge')
     needs:
       - _setup
       - sonic-decoration
@@ -479,11 +547,13 @@ jobs:
     with:
       package: sonic-gtk-theme-bridge
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-interface-libraries:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-interface-libraries')
     needs:
       - _setup
       - sonic-activities
@@ -500,11 +570,13 @@ jobs:
     with:
       package: sonic-interface-libraries
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-keybind-daemon:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-keybind-daemon')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -515,11 +587,13 @@ jobs:
     with:
       package: sonic-keybind-daemon
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-login-manager:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-login-manager')
     needs:
       - _setup
       - sonic-frameworks-auth
@@ -534,11 +608,13 @@ jobs:
     with:
       package: sonic-login-manager
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-network-manager:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-network-manager')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -553,11 +629,13 @@ jobs:
     with:
       package: sonic-network-manager
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-night-light:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-night-light')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -565,11 +643,13 @@ jobs:
     with:
       package: sonic-night-light
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-pipewire:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-pipewire')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -577,11 +657,13 @@ jobs:
     with:
       package: sonic-pipewire
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-qt-theme-bridge:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-qt-theme-bridge')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -594,11 +676,13 @@ jobs:
     with:
       package: sonic-qt-theme-bridge
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-quick-image-editor:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-quick-image-editor')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -606,11 +690,13 @@ jobs:
     with:
       package: sonic-quick-image-editor
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-screen:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screen')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -622,22 +708,26 @@ jobs:
     with:
       package: sonic-screen
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-screen-library:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screen-library')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-screen-library
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-screenies:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screenies')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -654,11 +744,13 @@ jobs:
     with:
       package: sonic-screenies
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-screenlocker:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screenlocker')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -673,11 +765,13 @@ jobs:
     with:
       package: sonic-screenlocker
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-silver:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver')
     needs:
       - _setup
       - sonic-decoration
@@ -690,11 +784,13 @@ jobs:
     with:
       package: sonic-silver
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-silver-gtk:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-gtk')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -702,33 +798,39 @@ jobs:
     with:
       package: sonic-silver-gtk
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-silver-icons:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-icons')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-silver-icons
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-silver-sddm:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-sddm')
     needs:
       - _setup
       - sonic-workspace
     with:
       package: sonic-silver-sddm
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-system-info:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-system-info')
     needs:
       - _setup
       - sonic-frameworks-auth
@@ -740,11 +842,13 @@ jobs:
     with:
       package: sonic-system-info
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-system-monitor-library:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-system-monitor-library')
     needs:
       - _setup
       - sonic-frameworks-auth
@@ -754,11 +858,13 @@ jobs:
     with:
       package: sonic-system-monitor-library
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-terminal:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-terminal')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -774,11 +880,13 @@ jobs:
     with:
       package: sonic-terminal
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-terminal-tools:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-terminal-tools')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -790,11 +898,13 @@ jobs:
     with:
       package: sonic-terminal-tools
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-welcome-center:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-welcome-center')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -808,11 +918,13 @@ jobs:
     with:
       package: sonic-welcome-center
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-win:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-win')
     needs:
       - _setup
       - sonic-activities
@@ -835,11 +947,13 @@ jobs:
     with:
       package: sonic-win
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-workspace:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace')
     needs:
       - _setup
       - sonic-activities
@@ -871,11 +985,13 @@ jobs:
     with:
       package: sonic-workspace
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-workspace-addons:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace-addons')
     needs:
       - _setup
       - sonic-frameworks-auth
@@ -895,22 +1011,26 @@ jobs:
     with:
       package: sonic-workspace-addons
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonic-workspace-wallpapers:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace-wallpapers')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
     with:
       package: sonic-workspace-wallpapers
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   sonicde-meta:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'sonicde-meta')
     needs:
       - _setup
       - sonic-activities-stats
@@ -940,11 +1060,13 @@ jobs:
     with:
       package: sonicde-meta
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   xdg-desktop-portal-sonicde:
     uses: ./.github/workflows/build-package.yml
+    if: |
+	  !cancelled()
+	  && contains(fromJSON(needs._setup.outputs.packages), 'xdg-desktop-portal-sonicde')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -960,7 +1082,6 @@ jobs:
     with:
       package: xdg-desktop-portal-sonicde
       branch: ${{ inputs.branch }}
-      build-needed: ${{ inputs.build-needed }}
     secrets: inherit
 
   all-packages:

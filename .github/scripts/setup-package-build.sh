@@ -36,27 +36,3 @@ gh_env_set STAGING_REPO_URL "$repourl"
 
 gh repo clone "$PACKAGES_REPOSITORY" "$GITHUB_WORKSPACE"/pkgbuilds -- \
 	--branch "$BRANCH" --depth 1 --single-branch
-
-test "$BUILD_NEEDED" = 'true' && exit 0
-
-wildcards=$(pkgbuild_pkgnames_to_wildcards "$package_dir")
-
-set +e
-released=$(gh_release_filter_assets "$REPOSITORY" "$CURRENT_TAG" "$wildcards")
-staged=$(gh_release_filter_assets "$REPOSITORY" "$STAGING_TAG" "$wildcards")
-set -e
-
-printf 'Released assets:\n%s\n\n' "$released"
-printf 'Staged assets:\n%s\n\n' "$staged"
-
-if [ "$released" ] && [ "$staged" != "$released" ] ; then
-	overwrite=1
-	printf 'Copying assets from %s to %s\n' "$CURRENT_TAG" "$STAGING_TAG"
-	gh_release_copy_assets "$REPOSITORY" "$CURRENT_TAG" "$STAGING_TAG" \
-		"$wildcards" "$overwrite"
-fi
-
-if [ -z "$released" ] && [ -z "$staged" ] ; then
-	printf 'Setting BUILD_NEEDED to true\n'
-	gh_env_set BUILD_NEEDED 'true'
-fi
