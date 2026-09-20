@@ -113,8 +113,6 @@ cat staged.csv
 echo 'released:'
 cat released.csv
 
-exit 0
-
 cat staged.csv released.csv | grep -Fxf assets.csv | sort -u > existing.csv || :
 grep -vFxf staged.csv assets.csv > missing.csv || :
 grep -vFxf released.csv missing.csv > build-assets.csv || :
@@ -127,6 +125,8 @@ find "$tmp" -name 'desc' -exec sed -n '2p' {} \; | sort -u > db-assets.csv
 
 echo "db-assets:"
 cat db-assets.csv
+
+exit 1
 
 grep -vFxf existing.csv db-assets.csv > db-obsolete.csv || :
 grep -vFxf db-assets.csv existing.csv > db-missing.csv || :
