@@ -31,11 +31,6 @@ on:
         description: The name of the docker image to use
         type: string
         default: ${{ vars.DOCKER_IMAGE }}
-      build-needed:
-        description: |-
-          Force the build of the package. Replaces an eventually existing package
-          with the result of this build run.
-        type: boolean
 
       # App-based authentication
       app-id:
@@ -81,7 +76,6 @@ jobs:
           setup-package-build.sh pkgbuilds/"$PACKAGE"
 
       - name: Build packages
-        if: ${{ env.BUILD_NEEDED == 'true' }}
         uses: callmetango/archlinux-build-package-action@next
         with:
           path: pkgbuilds/${{ inputs.package }}
@@ -98,8 +92,7 @@ jobs:
           ninja: true
           tmpfs: true
 
-      - name: Add packages to release
-        if: ${{ env.BUILD_NEEDED == 'true' || env.REGISTER_NEEDED == 'true' }}
+      - name: Add package to release
         run: |
           . setup-build-env.sh # reauthenticate
           add-package-to-release.sh "$REPOSITORY" "$STAGING_TAG" \

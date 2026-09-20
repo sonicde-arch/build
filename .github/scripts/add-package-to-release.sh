@@ -46,6 +46,9 @@ log_open
 
 cd "$package_dir"
 
+echo 'packages:'
+ls -l
+
 assets=$(ls -1 -- *.pkg.*)
 if [ "${REGISTER_NEEDED:-false}" != 'true' ] ; then
 	inf 'Uploading packages:\n%s' "$assets"
