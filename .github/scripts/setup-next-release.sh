@@ -87,10 +87,10 @@ if [ "$force" = true ] ; then
 	exit 0
 fi
 
+start_container
 
 inf 'Calculating sets of assets'
 
-start_container
 docker exec --user "$(id -u):$(id -g)" builder sh -c '
 	for pkgbuild in */PKGBUILD ; do
 		test -f "$pkgbuild" || continue
@@ -107,12 +107,6 @@ docker exec --user "$(id -u):$(id -g)" builder sh -c '
 list_assets "$repo" "$stagetag" > staged.csv
 list_assets "$repo" "$reltag" > released.csv 2>$NUL || :
 
-echo 'staged:'
-cat staged.csv
-
-echo 'released:'
-cat released.csv
-
 cat staged.csv released.csv | grep -Fxf assets.csv | sort -u > existing.csv || :
 grep -vFxf staged.csv assets.csv > missing.csv || :
 grep -vFxf released.csv missing.csv > build-assets.csv || :
@@ -123,14 +117,11 @@ gh release download --clobber --repo "$repo" "$stagetag" --pattern "$dbasset*"
 tar -xf "$dbasset" -C "$tmp"
 find "$tmp" -name 'desc' -exec sed -n '2p' {} \; | sort -u > db-assets.csv
 
-echo "db-assets:"
-cat db-assets.csv
-
-exit 1
-
 grep -vFxf existing.csv db-assets.csv > db-obsolete.csv || :
 grep -vFxf db-assets.csv existing.csv > db-missing.csv || :
 grep -vFxf copy-assets.csv db-missing.csv > download-assets.csv || :
+
+tail -n -1 -- *.csv
 
 
 inf 'Downloading and copying assets'
