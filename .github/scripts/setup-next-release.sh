@@ -64,6 +64,9 @@ log_open
 
 dbname=$REPO_DB_NAME
 
+gh repo clone "$PACKAGES_REPOSITORY" . -- \
+	--branch "$BRANCH" --depth 1 --single-branch
+
 gh_release_delete "$repo" "$nexttag" 2>$NUL || : # cleanup
 test "$force" = true && gh_release_delete "$repo" "$stagetag" 2>$NUL || :
 
@@ -75,9 +78,6 @@ if ! gh release view --repo "$repo" "$stagetag" 2>$NUL ; then
 		--repo "$repo" "$stagetag"
 	gh release upload --repo "$repo" "$stagetag" ./*.db*
 fi
-
-gh repo clone "$PACKAGES_REPOSITORY" . -- \
-	--branch "$BRANCH" --depth 1 --single-branch
 
 printf '%s\n' */PKGBUILD | cut -d '/' -f 1 > bases.csv
 if [ "$force" = true ] ; then
@@ -94,7 +94,7 @@ docker exec --user "$(id -u):$(id -g)" builder sh -c '
 		test -f "$pkgbuild" || continue
 		pkgbase=${pkgbuild%/*}
 		cd "$pkgbase"
-		for asset in $(makepkg --packagelist); do
+		for asset in $(makepkg --packagelist | sed "s|.*/||"); do
 			printf "%s\n" "$asset" >> ../assets.csv
 			printf "%s|%s\n" "$asset" "$pkgbase" >> ../assets2bases.csv
 		done
@@ -117,9 +117,9 @@ grep -vFxf released.csv missing.csv > build-assets.csv || :
 grep -Fxf released.csv missing.csv > copy-assets.csv || :
 
 dbasset=$(gh_release_get_asset_maxrev "$repo" "$stagetag" "$dbname.db")
-gh release download --repo "$repo" "$dbasset*"
+gh release download --repo "$repo" "$stagetag" --pattern "$dbasset*"
 
-tar -tf "$dbasset" | sed "s|/.*||; s|$|.tar.$CEXT|" | sort -u > db-assets.csv
+tar -tf "$dbasset" | sed "s|/.*||; s|$|.$CEXT|" | sort -u > db-assets.csv
 grep -vFxf existing.csv db-assets.csv > db-obsolete.csv || :
 grep -vFxf db-assets.csv existing.csv > db-missing.csv || :
 grep -vFxf copy-assets.csv db-missing.csv > download-assets.csv || :
