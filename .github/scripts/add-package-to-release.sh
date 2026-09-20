@@ -46,6 +46,9 @@ log_open
 
 cd "$package_dir"
 
+echo 'packages:'
+ls -l
+
 assets=$(ls -1 -- *.pkg.*)
 inf 'Uploading packages:\n%s' "$assets"
 gh release upload --repo "$repo" "$tag" -- *.pkg.*
