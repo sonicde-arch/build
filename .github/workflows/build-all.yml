@@ -50,8 +50,8 @@ jobs:
   sonic-activities:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-activities')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-activities')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -64,8 +64,8 @@ jobs:
   sonic-activities-stats:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-activities-stats')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-activities-stats')
     needs:
       - _setup
       - sonic-activities
@@ -78,8 +78,8 @@ jobs:
   sonic-audio-applet-pulse:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-audio-applet-pulse')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-audio-applet-pulse')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -98,8 +98,8 @@ jobs:
   sonic-bluetooth-runtime:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-bluetooth-runtime')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-bluetooth-runtime')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -117,8 +117,8 @@ jobs:
   sonic-breeze:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-breeze')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-breeze')
     needs:
       - _setup
       - sonic-decoration
@@ -139,8 +139,8 @@ jobs:
   sonic-breeze-sddm:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-breeze-sddm')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-breeze-sddm')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -153,8 +153,8 @@ jobs:
   sonic-browser-integration:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-browser-integration')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-browser-integration')
     needs:
       - _setup
       - sonic-activities
@@ -170,8 +170,8 @@ jobs:
   sonic-decoration:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-decoration')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-decoration')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -183,8 +183,8 @@ jobs:
   sonic-desktop-interface:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-desktop-interface')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-desktop-interface')
     needs:
       - _setup
       - sonic-activities
@@ -215,8 +215,8 @@ jobs:
   sonic-dr-robotnik:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-dr-robotnik')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-dr-robotnik')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -233,8 +233,8 @@ jobs:
   sonic-ecco:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-ecco')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-ecco')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -255,8 +255,8 @@ jobs:
   sonic-frameworks-auth:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-auth')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-auth')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -270,8 +270,8 @@ jobs:
   sonic-frameworks-cmake-modules:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-cmake-modules')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-cmake-modules')
     needs:
       - _setup
     with:
@@ -282,8 +282,8 @@ jobs:
   sonic-frameworks-color-scheme:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-color-scheme')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-color-scheme')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -296,8 +296,8 @@ jobs:
   sonic-frameworks-core-addons:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-core-addons')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-core-addons')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -309,8 +309,8 @@ jobs:
   sonic-frameworks-doctools:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-doctools')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-doctools')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -322,8 +322,8 @@ jobs:
   sonic-frameworks-gui-addons:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-gui-addons')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-gui-addons')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -335,8 +335,8 @@ jobs:
   sonic-frameworks-icon-themes:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-icon-themes')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-icon-themes')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -350,8 +350,8 @@ jobs:
   sonic-frameworks-idle-tracker:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-idle-tracker')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-idle-tracker')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -363,8 +363,8 @@ jobs:
   sonic-frameworks-io:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -382,8 +382,8 @@ jobs:
   sonic-frameworks-io-extras:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io-extras')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io-extras')
     needs:
       - _setup
       - sonic-activities
@@ -400,8 +400,8 @@ jobs:
   sonic-frameworks-io-fuse:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io-fuse')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-io-fuse')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -415,8 +415,8 @@ jobs:
   sonic-frameworks-keybind:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-keybind')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-keybind')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -428,8 +428,8 @@ jobs:
   sonic-frameworks-open-collab:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-open-collab')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-open-collab')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -441,8 +441,8 @@ jobs:
   sonic-frameworks-quick-silver-style:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-silver-style')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-silver-style')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -458,8 +458,8 @@ jobs:
   sonic-frameworks-quick-ui:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-ui')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-ui')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -471,8 +471,8 @@ jobs:
   sonic-frameworks-quick-ui-addons:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-ui-addons')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-quick-ui-addons')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -490,8 +490,8 @@ jobs:
   sonic-frameworks-runner:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-runner')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-runner')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -506,8 +506,8 @@ jobs:
   sonic-frameworks-settings-ui:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-settings-ui')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-settings-ui')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -521,8 +521,8 @@ jobs:
   sonic-frameworks-windowsystem:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-windowsystem')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-windowsystem')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -534,8 +534,8 @@ jobs:
   sonic-gtk-theme-bridge:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-gtk-theme-bridge')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-gtk-theme-bridge')
     needs:
       - _setup
       - sonic-decoration
@@ -552,8 +552,8 @@ jobs:
   sonic-interface-libraries:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-interface-libraries')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-interface-libraries')
     needs:
       - _setup
       - sonic-activities
@@ -575,8 +575,8 @@ jobs:
   sonic-keybind-daemon:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-keybind-daemon')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-keybind-daemon')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -592,8 +592,8 @@ jobs:
   sonic-login-manager:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-login-manager')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-login-manager')
     needs:
       - _setup
       - sonic-frameworks-auth
@@ -613,8 +613,8 @@ jobs:
   sonic-network-manager:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-network-manager')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-network-manager')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -634,8 +634,8 @@ jobs:
   sonic-night-light:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-night-light')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-night-light')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -648,8 +648,8 @@ jobs:
   sonic-pipewire:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-pipewire')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-pipewire')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -662,8 +662,8 @@ jobs:
   sonic-qt-theme-bridge:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-qt-theme-bridge')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-qt-theme-bridge')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -681,8 +681,8 @@ jobs:
   sonic-quick-image-editor:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-quick-image-editor')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-quick-image-editor')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -695,8 +695,8 @@ jobs:
   sonic-screen:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screen')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screen')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -713,8 +713,8 @@ jobs:
   sonic-screen-library:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screen-library')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screen-library')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -726,8 +726,8 @@ jobs:
   sonic-screenies:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screenies')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screenies')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -749,8 +749,8 @@ jobs:
   sonic-screenlocker:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screenlocker')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-screenlocker')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -770,8 +770,8 @@ jobs:
   sonic-silver:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver')
     needs:
       - _setup
       - sonic-decoration
@@ -789,8 +789,8 @@ jobs:
   sonic-silver-gtk:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-gtk')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-gtk')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -803,8 +803,8 @@ jobs:
   sonic-silver-icons:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-icons')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-icons')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -816,8 +816,8 @@ jobs:
   sonic-silver-sddm:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-sddm')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-sddm')
     needs:
       - _setup
       - sonic-workspace
@@ -829,8 +829,8 @@ jobs:
   sonic-system-info:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-system-info')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-system-info')
     needs:
       - _setup
       - sonic-frameworks-auth
@@ -847,8 +847,8 @@ jobs:
   sonic-system-monitor-library:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-system-monitor-library')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-system-monitor-library')
     needs:
       - _setup
       - sonic-frameworks-auth
@@ -863,8 +863,8 @@ jobs:
   sonic-terminal:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-terminal')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-terminal')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -885,8 +885,8 @@ jobs:
   sonic-terminal-tools:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-terminal-tools')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-terminal-tools')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -903,8 +903,8 @@ jobs:
   sonic-welcome-center:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-welcome-center')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-welcome-center')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -923,8 +923,8 @@ jobs:
   sonic-win:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-win')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-win')
     needs:
       - _setup
       - sonic-activities
@@ -952,8 +952,8 @@ jobs:
   sonic-workspace:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace')
     needs:
       - _setup
       - sonic-activities
@@ -990,8 +990,8 @@ jobs:
   sonic-workspace-addons:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace-addons')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace-addons')
     needs:
       - _setup
       - sonic-frameworks-auth
@@ -1016,8 +1016,8 @@ jobs:
   sonic-workspace-wallpapers:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace-wallpapers')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonic-workspace-wallpapers')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
@@ -1029,8 +1029,8 @@ jobs:
   sonicde-meta:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'sonicde-meta')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'sonicde-meta')
     needs:
       - _setup
       - sonic-activities-stats
@@ -1065,8 +1065,8 @@ jobs:
   xdg-desktop-portal-sonicde:
     uses: ./.github/workflows/build-package.yml
     if: |
-	  !cancelled()
-	  && contains(fromJSON(needs._setup.outputs.packages), 'xdg-desktop-portal-sonicde')
+      !cancelled()
+      && contains(fromJSON(needs._setup.outputs.packages), 'xdg-desktop-portal-sonicde')
     needs:
       - _setup
       - sonic-frameworks-cmake-modules
