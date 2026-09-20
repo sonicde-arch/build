@@ -30,6 +30,10 @@ force=$5    # force the build flag
 CEXT='tar.zst'
 NUL=/dev/null
 NOTES='Staging area for the next release'
+OPTIONS="\
+debug
+strip"
+PKGEXT='.pkg.tar.zst'
 
 
 # Functions
@@ -48,10 +52,10 @@ upload_assets() {
 }
 
 start_container() {
-	inf 'Starting Docker container'
 	docker run --detach --name builder --workdir /workspace \
 		--volume "$(pwd):/workspace" \
-		"$DOCKER_IMAGE" sh -c 'while :; do sleep 3600; done'
+		"$DOCKER_IMAGE" sh -c 'while :; do sleep 3600; done' >$NUL &
+	contpid=$!
 }
 
 
@@ -61,8 +65,11 @@ trap log_close 0
 trap 'exit 1' HUP INT TERM
 log_open
 
+contpid=
 dbname=$REPO_DB_NAME
 tmp=$(mktemp -d)
+
+start_container
 
 gh repo clone "$PACKAGES_REPOSITORY" . -- \
 	--branch "$BRANCH" --depth 1 --single-branch
@@ -87,22 +94,19 @@ if [ "$force" = true ] ; then
 	exit 0
 fi
 
-start_container
 
 inf 'Calculating sets of assets'
 
-docker exec --user "$(id -u):$(id -g)" builder sh -c '
-	for pkgbuild in */PKGBUILD ; do
-		test -f "$pkgbuild" || continue
-		pkgbase=${pkgbuild%/*}
-		cd "$pkgbase"
-		for asset in $(makepkg --packagelist | sed "s|.*/||"); do
-			printf "%s\n" "$asset" >> ../assets.csv
-			printf "%s|%s\n" "$asset" "$pkgbase" >> ../assets2bases.csv
-		done
-		cd ..
+for pkgbuild in */PKGBUILD; do
+	test -f "$pkgbuild" || continue
+	pkgbase=${pkgbuild%/*}
+
+	makepkg_packagelist "$pkgbase/.SRCINFO" "$CARCH" "$PKGEXT" "$OPTIONS" |
+	while IFS= read -r asset; do
+		printf '%s\n' "$asset" >> assets.csv
+		printf '%s|%s\n' "$asset" "$pkgbase" >> assets2bases.csv
 	done
-'
+done
 
 list_assets "$repo" "$stagetag" > staged.csv
 list_assets "$repo" "$reltag" > released.csv 2>$NUL || :
@@ -128,26 +132,31 @@ done
 
 inf 'Downloading and copying assets'
 
-download_assets "$repo" "$reltag" copy-assets.csv
+sed 's/$/*/g' copy-assets.csv > copy-assets-star.csv # for *.sig etc.
+download_assets "$repo" "$reltag" copy-assets-star.csv
 download_assets "$repo" "$stagetag" download-assets.csv
+# shellcheck disable=SC2046
 test -s copy-assets.csv &&
-	xargs -r gh release upload --repo "$repo" "$stagetag" < copy-assets.csv
+	set -- $(cat copy-assets-star.csv) &&
+	gh release upload --repo "$repo" "$stagetag" "$@"
 
 
 inf 'Ensuring database consistency'
-inf 'Obsolete assets:\n%s\n' "$(cat db-obsolete.csv)"
-inf 'Missing assets:\n%s\n' "$(cat db-missing.csv)"
 
-revname=$(gh_release_inc_asset_revision "$dbasset")
-mv "$dbasset.$CEXT" "$revname.$CEXT"
-docker exec --user "$(id -u):$(id -g)" builder sh -c '
-	sed "s/\.pkg\.tar\.zst$//; s/-[^-]*-[^-]*-[^-]*$//" db-obsolete.csv |
-		xargs -r repo-remove "$1"
-	xargs -r repo-add "$1" < db-missing.csv
-' _ "$revname.$CEXT"
+if [ -s db-missing.csv ] || [ -s db-obsolete.csv ] ; then
+	inf 'Obsolete assets:\n%s\n' "$(cat db-obsolete.csv)"
+	inf 'Missing assets:\n%s\n' "$(cat db-missing.csv)"
 
-test -s db-missing.csv -o -s db-obsolete.csv &&
+	revname=$(gh_release_inc_asset_revision "$dbasset")
+	mv "$dbasset.$CEXT" "$revname.$CEXT"
+	wait "$contpid"
+	docker exec --user "$(id -u):$(id -g)" builder sh -c '
+		sed "s/\.pkg\.tar\.zst$//; s/-[^-]*-[^-]*-[^-]*$//" db-obsolete.csv |
+			xargs -r repo-remove "$1"
+		xargs -r repo-add "$1" < db-missing.csv
+	' _ "$revname.$CEXT"
 	upload_assets "$repo" "$stagetag" "$revname"*
+fi
 
 
 inf 'Emitting packages to build'
