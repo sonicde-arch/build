@@ -111,18 +111,18 @@ cat staged.csv
 echo 'released:'
 cat released.csv
 
-cat staged.csv released.csv | grep -Fxf assets.csv | sort -u > existing.csv
-grep -vFxf staged.csv assets.csv > missing.csv
-grep -vFxf released.csv missing.csv > build-assets.csv
-grep -Fxf released.csv missing.csv > copy-assets.csv
+cat staged.csv released.csv | grep -Fxf assets.csv | sort -u > existing.csv || :
+grep -vFxf staged.csv assets.csv > missing.csv || :
+grep -vFxf released.csv missing.csv > build-assets.csv || :
+grep -Fxf released.csv missing.csv > copy-assets.csv || :
 
 dbasset=$(gh_release_get_asset_maxrev "$repo" "$stagetag" "$dbname.db")
 gh release download --repo "$repo" "$dbasset*"
 
 tar -tf "$dbasset" | sed "s|/.*||; s|$|.tar.$CEXT|" | sort -u > db-assets.csv
-grep -vFxf existing.csv db-assets.csv > db-obsolete.csv
-grep -vFxf db-assets.csv existing.csv > db-missing.csv
-grep -vFxf copy-assets.csv db-missing.csv > download-assets.csv
+grep -vFxf existing.csv db-assets.csv > db-obsolete.csv || :
+grep -vFxf db-assets.csv existing.csv > db-missing.csv || :
+grep -vFxf copy-assets.csv db-missing.csv > download-assets.csv || :
 
 
 inf 'Downloading and copying assets'
@@ -151,5 +151,5 @@ test -s db-missing.csv -o -s db-obsolete.csv &&
 inf 'Emitting packages to build'
 
 sed 's/$/|/' build-assets.csv | grep -Ff - assets2bases.csv |
-	cut -d '|' -f 2 | sort -u > build-bases.csv
+	cut -d '|' -f 2 | sort -u > build-bases.csv || :
 gh_output 'packages' "$(jq -Rs 'split("\n")[:-1]' < build-bases.csv)"
