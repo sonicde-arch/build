@@ -35,7 +35,7 @@ NOTES='Staging area for the next release'
 # Functions
 
 list_assets() {
-	gh release view --repo "$1" --json assets "$2" | jq -r '.assets[].name'
+	gh release view --json assets --repo "$1" "$2" | jq -r '.assets[].name'
 }
 
 download_assets() {
@@ -71,6 +71,7 @@ gh_release_delete "$repo" "$nexttag" 2>$NUL || : # cleanup
 test "$force" = true && gh_release_delete "$repo" "$stagetag" 2>$NUL || :
 
 if ! gh release view --repo "$repo" "$stagetag" 2>$NUL ; then
+	inf 'Creating new release %s@%s' "$repo" "$stagetag"
 	revname="$REPO_DB_NAME-r0000.db"
 	tar --zstd -cf "$revname" -T /dev/null
 	cp "$revname" "$revname.$CEXT"
@@ -112,6 +113,8 @@ cat staged.csv
 echo 'released:'
 cat released.csv
 
+exit 0
+
 cat staged.csv released.csv | grep -Fxf assets.csv | sort -u > existing.csv || :
 grep -vFxf staged.csv assets.csv > missing.csv || :
 grep -vFxf released.csv missing.csv > build-assets.csv || :
@@ -145,7 +148,8 @@ inf 'Missing assets:\n%s\n' "$(cat db-missing.csv)"
 revname=$(gh_release_inc_asset_revision "$dbasset")
 mv "$dbasset.$CEXT" "$revname.$CEXT"
 docker exec --user "$(id -u):$(id -g)" builder sh -c '
-	xargs -r repo-remove "$1" < db-obsolete.csv
+	sed "s/\.pkg\.tar\.zst$//; s/-[^-]*-[^-]*-[^-]*$//" db-obsolete.csv |
+		xargs -r repo-remove "$1"
 	xargs -r repo-add "$1" < db-missing.csv
 ' _ "$revname.$CEXT"
 
@@ -154,6 +158,9 @@ test -s db-missing.csv -o -s db-obsolete.csv &&
 
 
 inf 'Emitting packages to build'
+
+echo "build-bases:"
+cat build-bases.csv
 
 sed 's/$/|/' build-assets.csv | grep -Ff - assets2bases.csv |
 	cut -d '|' -f 2 | sort -u > build-bases.csv || :
