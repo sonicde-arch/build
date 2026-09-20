@@ -4,7 +4,6 @@
 # SPDX-FileCopyrightInfo: 2026 callmetango for SonicDE
 
 set -eu
-set -x
 
 . "$SCRIPTS_DIR"/libgithub.sh
 . "$SCRIPTS_DIR"/liblog.sh
@@ -120,6 +119,10 @@ dbasset=$(gh_release_get_asset_maxrev "$repo" "$stagetag" "$dbname.db")
 gh release download --repo "$repo" "$stagetag" --pattern "$dbasset*"
 
 tar -tf "$dbasset" | sed "s|/.*||; s|$|.$CEXT|" | sort -u > db-assets.csv
+
+echo "db-assets:"
+cat db-assets.csv
+
 grep -vFxf existing.csv db-assets.csv > db-obsolete.csv || :
 grep -vFxf db-assets.csv existing.csv > db-missing.csv || :
 grep -vFxf copy-assets.csv db-missing.csv > download-assets.csv || :
