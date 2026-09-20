@@ -109,7 +109,7 @@ echo 'staged:'
 cat staged.csv
 
 echo 'released:'
-released.csv
+cat released.csv
 
 cat staged.csv released.csv | grep -Fxf assets.csv | sort -u > existing.csv
 grep -vFxf staged.csv assets.csv > missing.csv
