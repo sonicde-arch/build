@@ -5,6 +5,7 @@
 
 set -eu
 
+. "$SCRIPTS_DIR"/libarchpkg.sh
 . "$SCRIPTS_DIR"/libgithub.sh
 . "$SCRIPTS_DIR"/liblog.sh
 
