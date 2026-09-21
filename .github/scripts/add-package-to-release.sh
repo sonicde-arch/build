@@ -76,7 +76,10 @@ while : ; do
 		exit 1
 	fi
 
-	sleep "$attempt"
+	# See https://github.com/sonicde-arch/build/issues/4
+	gh_release_await_assets "$repo" "$tag" "$newdb
+$newdb.$CEXT"
+
 	attempt=$((attempt + 1))
 done
 
