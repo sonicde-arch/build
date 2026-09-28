@@ -70,7 +70,7 @@ tmpdir=$(mktemp -d)
 cd "$tmpdir"
 
 inf 'Downloading assets from %s@%s' "$src_repo" "$src_tag"
-gh release download --repo "$src_repo" "$src_tag" --pattern '*'
+ghpy release download -v --repo "$src_repo" "$src_tag" --pattern '*'
 
 if [ "$recreate_db" -eq 1 ] ; then
 	inf 'Recreating package database'
@@ -89,7 +89,7 @@ gh_release_delete "$tgt_repo" "$tmp_tag" 2>/dev/null || :
 gh release create --draft --repo "$tgt_repo" "$tmp_tag"
 
 inf 'Uploading assets to %s@%s' "$tgt_repo" "$tgt_tag"
-gh release upload --repo "$tgt_repo" "$tmp_tag" -- *
+ghpy release upload -v --repo "$tgt_repo" "$tmp_tag" -- *
 
 release-new-release.sh "$tgt_repo" "$tmp_tag" "$tgt_tag"
 

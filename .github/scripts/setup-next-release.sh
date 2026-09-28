@@ -44,12 +44,17 @@ list_assets() {
 }
 
 download_assets() {
-	xargs -r -P 4 -I {} gh release download --repo "$1" "$2" --pattern '{}' < "$3"
+	repo=$1; tag=$2
+	set --
+	while IFS= read -r pattern; do
+		test -n "$pattern" && set -- "$@" --pattern "$pattern"
+	done < "$3"
+	ghpy release download -v --repo "$repo" "$tag" "$@"
 }
 
 upload_assets() {
 	_repo=$1; _tag=$2; shift 2
-	gh release upload --repo "$_repo" "$_tag" "$@"
+	ghpy release upload -v --repo "$_repo" "$_tag" "$@"
 }
 
 start_container() {
@@ -85,7 +90,7 @@ if ! gh release view --repo "$repo" "$stagetag" 1>$NUL 2>&1 ; then
 	cp "$revname" "$revname.$CEXT"
 	gh release create --prerelease --title "$stagetag" --notes "$NOTES" \
 		--repo "$repo" "$stagetag"
-	gh release upload --repo "$repo" "$stagetag" ./*.db*
+	ghpy release upload -v --repo "$repo" "$stagetag" -- *.db*
 fi
 
 # shellcheck disable=SC2012
@@ -118,7 +123,7 @@ grep -vFxf released.csv missing.csv > build-assets.csv || :
 grep -Fxf released.csv missing.csv > copy-assets.csv || :
 
 dbasset=$(gh_release_get_asset_maxrev "$repo" "$stagetag" "$dbname.db")
-gh release download --clobber --repo "$repo" "$stagetag" --pattern "$dbasset*"
+ghpy release download -v --repo "$repo" "$stagetag" --pattern "$dbasset*" # --clobber
 tar -xf "$dbasset" -C "$tmp"
 find "$tmp" -name 'desc' -exec sed -n '2p' {} \; | sort -u > db-assets.csv
 
@@ -140,7 +145,7 @@ download_assets "$repo" "$stagetag" download-assets.csv
 # shellcheck disable=SC2046
 test -s copy-assets.csv &&
 	set -- $(cat copy-assets-star.csv) &&
-	gh release upload --repo "$repo" "$stagetag" "$@"
+	ghpy release upload -v --repo "$repo" "$stagetag" "$@"
 
 
 inf 'Ensuring database consistency'

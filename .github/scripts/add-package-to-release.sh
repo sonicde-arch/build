@@ -52,7 +52,7 @@ ls -l
 assets=$(ls -1 -- *.pkg.*)
 if [ "${REGISTER_NEEDED:-false}" != 'true' ] ; then
 	inf 'Uploading packages:\n%s' "$assets"
-	gh release upload --repo "$repo" "$tag" -- *.pkg.*
+	ghpy release upload -v --repo "$repo" "$tag" -- *.pkg.*
 fi
 
 attempt=1
@@ -61,7 +61,7 @@ while : ; do
 	olddb=$(gh_release_get_asset_maxrev "$repo" "$tag" "$dbname.db")
 
 	inf 'Downloading package database %s' "$olddb"
-	gh release download --clobber --repo "$repo" "$tag" --pattern "$olddb*"
+	ghpy release download -v --repo "$repo" "$tag" --pattern "$olddb*" # --clobber
 	newdb=$(gh_release_inc_asset_revision "$olddb")
 	mv "$olddb.$CEXT" "$newdb.$CEXT"
 
@@ -70,7 +70,7 @@ while : ; do
 	rm -f "$newdb"*.old
 
 	inf 'Uploading database %s*' "$newdb"
-	if gh release upload --repo "$repo" "$tag" "$newdb"* ; then
+	if ghpy release upload -v --repo "$repo" "$tag" "$newdb"* ; then
 		inf 'Uploaded database %s*' "$newdb"
 		break
 	fi
@@ -80,13 +80,11 @@ while : ; do
 	fi
 
 	# See https://github.com/sonicde-arch/build/issues/4
-	gh_release_await_assets "$repo" "$tag" "$newdb
-$newdb.$CEXT"
+	ghpy release await-assets -v --repo "$repo" "$tag" "$newdb" "$newdb.$CEXT"
 
 	attempt=$((attempt + 1))
 done
 
 inf 'Awaiting availability of assets'
-gh_release_await_assets "$repo" "$tag" "$assets
-$newdb
-$newdb.$CEXT"
+ghpy release await-assets -v --repo "$repo" "$tag" -- \
+	"$newdb" "$newdb.$CEXT" *.pkg.*

@@ -21,6 +21,10 @@ set -eu
 
 # Main
 
+pypath=$(printf '%s\n' /opt/hostedtoolcache/Python/3.13.*/x64/bin)
+export PATH="$pypath:$PATH"
+python -m pip install "ghpy>=0.3,<0.4"
+
 auth=$(gh-app-token.sh "$APP_ID")
 gh_env_set GITHUB_TOKEN "$(printf '%s\n' "$auth" | cut -f1)"
 gh_env_set GH_TOKEN "$GITHUB_TOKEN"
