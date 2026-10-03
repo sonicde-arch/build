@@ -5,18 +5,14 @@
 # SPDX-FileCopyrightInfo: 2026 Joseph Crowell joseph.w.crowell@gmail.com
 
 set -eu
+test "${RUNNER_DEBUG:-}" = 1 && set -x
 
 . "$SCRIPTS_DIR"/liblog.sh
 
 
-# Arguments
-
-# $1: repository to check for existing artifacts
-# $2: source tag
-# $3: target tag
-
-
-# Constants
+: "${1:?BINPKGS_REPO must not be empty}"
+: "${2:?TMP_TAG must not be empty}"
+: "${3:?RELEASED_TAG must not be empty}"
 
 NEW_NOTES='Current release by the build bot'
 

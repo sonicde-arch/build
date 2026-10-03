@@ -56,7 +56,6 @@ defaults:
     shell: sh
 
 env:
-  APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
   CARCH: x86_64 # TODO make configurable
   GH_TOKEN: ${{ github.token }}
 
@@ -71,29 +70,27 @@ jobs:
           vars: ${{ toJSON(vars) }}
 
       - name: Setup package build
+        env:
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         run: |
           . setup-build-env.sh
-          setup-package-build.sh pkgbuilds/"$PACKAGE"
+          setup-arch-build.sh "$BINPKGS_REPO" "$STAGING_TAG" "$PACKAGE"
 
-      - name: Build packages
-        uses: callmetango/archlinux-build-package-action@next
-        with:
-          path: pkgbuilds/${{ inputs.package }}
-          packager: ${{ inputs.packager }}
-          docker-image: ${{ inputs.docker-image }}
-          makepkg-opts: --syncdeps --noconfirm
-          srcinfo: false
-          pgp-key: ${{ inputs.pgp-key }}
-          signing-key: ${{ secrets.RELEASE_SIGNING_KEY }}
-          signing-key-password: ${{ secrets.RELEASE_SIGNING_KEY_PASSWORD }}
-          custom-repo-name: ${{ env.STAGING_REPO_NAME }}
-          custom-repo-url: ${{ env.STAGING_REPO_URL }}
-          custom-repo-siglevel: Optional TrustAll
-          ninja: true
-          tmpfs: true
+      - name: Build package
+        run: |
+          build-arch-package.sh "$PACKAGE"
+
+      - name: Sign package
+        env:
+          SIGNING_KEY: ${{ secrets.RELEASE_SIGNING_KEY }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.RELEASE_SIGNING_KEY_PASSWORD }}
+        run: |
+          sign-packages.sh "$BINPKGS_DIR" "$SIGNING_KEY" \
+              "$SIGNING_KEY_PASSWORD"
 
       - name: Add package to release
+        env:
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         run: |
           . setup-build-env.sh # reauthenticate
-          add-package-to-release.sh "$REPOSITORY" "$STAGING_TAG" \
-              "$REPO_DB_NAME" pkgbuilds/"$PACKAGE"
+          add-package-to-release.sh "$BINPKGS_REPO" "$STAGING_TAG" "$PACKAGE"

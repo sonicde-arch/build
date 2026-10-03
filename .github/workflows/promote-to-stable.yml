@@ -34,5 +34,5 @@ jobs:
       - name: Promote to stable
         run: |
           . setup-build-env.sh
-          copy-release.sh "$REPOSITORY" "$CURRENT_TAG" \
-              "$STABLE_REPOSITORY" "$CURRENT_TAG"
+          copy-release.sh "$BINPKGS_REPO" "$RELEASED_TAG" \
+              "$BINPKGS_STABLE_REPO" "$RELEASED_TAG"

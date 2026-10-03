@@ -5,86 +5,26 @@
 # SPDX-FileCopyrightInfo: 2026 Joseph Crowell joseph.w.crowell@gmail.com
 
 set -eu
+test "${RUNNER_DEBUG:-}" = 1 && set -x
 
-. "$SCRIPTS_DIR"/libarchpkg.sh
-. "$SCRIPTS_DIR"/libgithub.sh
 . "$SCRIPTS_DIR"/liblog.sh
 
 
-# Arguments
+: "${1:?REPOSITORY must not be empty}"
+: "${2:?STAGING_TAG must not be empty}"
+: "${3:?PACKAGE must not be empty}"
 
-repo=${1-$REPOSITORY}
-tag=${2-$STAGING_TAG}
-dbname=${3-$REPO_DB_NAME}
-package_dir=$4
+: "${BINPKGS_DIR:?BINPKGS_DIR must not be empty}"
 
+ARCFMT='tar.zst'
 
-# Environment
-
-: "${DOCKER_IMAGE:?DOCKER_IMAGE must not be empty}"
-
-
-# Constants
-
-CEXT='tar.zst'
-
-
-# Functions
-
-cleanup() {
-	rc=$?
-	log_close || :
-	return $rc
-}
-
-
-# Main
-
-trap cleanup 0
+trap log_close 0
 trap 'exit 1' HUP INT TERM
 log_open
 
-cd "$package_dir"
 
-echo 'packages:'
-ls -l
+inf 'Uploading assets'
 
-assets=$(ls -1 -- *.pkg.*)
-if [ "${REGISTER_NEEDED:-false}" != 'true' ] ; then
-	inf 'Uploading packages:\n%s' "$assets"
-	ghpy release upload -v --repo "$repo" "$tag" -- *.pkg.*
-fi
-
-attempt=1
-maxtries=20
-while : ; do
-	olddb=$(gh_release_get_asset_maxrev "$repo" "$tag" "$dbname.db")
-
-	inf 'Downloading package database %s' "$olddb"
-	ghpy release download -v --repo "$repo" "$tag" --pattern "$olddb*" # --clobber
-	newdb=$(gh_release_inc_asset_revision "$olddb")
-	mv "$olddb.$CEXT" "$newdb.$CEXT"
-
-	inf 'Adding packages to database %s' "$newdb"
-	repodb_add_packages "$DOCKER_IMAGE" "$newdb.$CEXT" ./*.pkg."$CEXT"
-	rm -f "$newdb"*.old
-
-	inf 'Uploading database %s*' "$newdb"
-	if ghpy release upload -v --repo "$repo" "$tag" "$newdb"* ; then
-		inf 'Uploaded database %s*' "$newdb"
-		break
-	fi
-	if [ "$attempt" -ge "$maxtries" ] ; then
-		err 'Tried %s times to upload database. Giving up' "$attempt"
-		exit 1
-	fi
-
-	# See https://github.com/sonicde-arch/build/issues/4
-	ghpy release await-assets -v --repo "$repo" "$tag" "$newdb" "$newdb.$CEXT"
-
-	attempt=$((attempt + 1))
-done
-
-inf 'Awaiting availability of assets'
-ghpy release await-assets -v --repo "$repo" "$tag" -- \
-	"$newdb" "$newdb.$CEXT" *.pkg.*
+cd "$BINPKGS_DIR"
+ghpy release upload -v --repo "$1" "$2" -- *.pkg.$ARCFMT*
+ghpy release await-assets -v --repo "$1" "$2" -- *.pkg.$ARCFMT*

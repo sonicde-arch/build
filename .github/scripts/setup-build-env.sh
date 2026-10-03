@@ -5,6 +5,7 @@
 # SPDX-FileCopyrightInfo: 2026 Joseph Crowell joseph.w.crowell@gmail.com
 
 set -eu
+test "${RUNNER_DEBUG:-}" = 1 && set -x
 
 . "$SCRIPTS_DIR"/libgithub.sh
 
@@ -16,7 +17,8 @@ set -eu
 : "${BRANCH:?BRANCH must not be empty}"
 : "${CARCH:?CARCH must not be empty}"
 : "${GITHUB_REPOSITORY_OWNER:?GITHUB_REPOSITORY_OWNER must not be empty}"
-: "${REPO_DB_PREFIX:?REPO_DB_PREFIX must not be empty}"
+: "${PKGDB_PREFIX:?PKGDB_PREFIX must not be empty}"
+: "${PKGSPECS_REPO:?PKGSPECS_REPO must not be empty}"
 
 
 # Main
@@ -29,17 +31,26 @@ auth=$(gh-app-token.sh "$APP_ID")
 gh_env_set GITHUB_TOKEN "$(printf '%s\n' "$auth" | cut -f1)"
 gh_env_set GH_TOKEN "$GITHUB_TOKEN"
 
-gh_env_set CURRENT_TAG "$CARCH"
-gh_env_set NEXT_TAG "$CARCH-next"
-gh_env_set STAGING_TAG "$CARCH-staging"
-
 case "$BRANCH" in
-	master) RELEASE_BRANCH='stable-testing' ;;
-	oldstable) RELEASE_BRANCH='oldstable-testing' ;;
-	*) RELEASE_BRANCH="$BRANCH" ;;
+	master) CHANNEL='stable-testing' ;;
+	oldstable) CHANNEL='oldstable-testing' ;;
+	*) CHANNEL="$BRANCH" ;;
 esac
+gh_env_set CHANNEL "$CHANNEL"
 
-gh_env_set RELEASE_BRANCH "$RELEASE_BRANCH"
-gh_env_set REPO_DB_NAME "$REPO_DB_PREFIX-$RELEASE_BRANCH"
-gh_env_set REPOSITORY "$GITHUB_REPOSITORY_OWNER/$RELEASE_BRANCH"
-gh_env_set STABLE_REPOSITORY "${REPOSITORY%-testing}"
+gh_env_set PKGSPECS_REPO "$PKGSPECS_REPO"
+gh_env_set PKGSPECS_DIR pkgspecs
+
+gh_env_set BINPKGS_REPO "$GITHUB_REPOSITORY_OWNER/$CHANNEL"
+gh_env_set BINPKGS_STABLE_REPO "${BINPKGS_REPO%-testing}"
+gh_env_set BINPKGS_DIR binpkgs
+
+gh_env_set RELEASED_TAG "$CARCH"
+gh_env_set STAGING_TAG "$CARCH-staging"
+gh_env_set TMP_TAG "$CARCH-tmp" # for swapping staging and released
+
+gh_env_set CONTAINER_NAME build
+gh_env_set CONTAINER_HOME /home/runner
+gh_env_set CONTAINER_USER runner
+
+gh_env_set PKGDB_NAME "$PKGDB_PREFIX-$CHANNEL"

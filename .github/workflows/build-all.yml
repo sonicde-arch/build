@@ -42,10 +42,8 @@ jobs:
         env:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         run: |
-          set -eu
           . setup-build-env.sh
-          setup-next-release.sh "$REPOSITORY" "$CURRENT_TAG" "$STAGING_TAG" \
-              "$NEXT_TAG" "$FORCE_BUILD"
+          setup-next-release.sh "$BINPKGS_REPO" "$STAGING_TAG" "$FORCE_BUILD"
 
   sonic-accounts-integration:
     if: |
@@ -3036,7 +3034,7 @@ jobs:
         env:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         run: |
-          create_repo_db=1; delete_source=1
+          create_pkgdb=1; delete_source=1
           . setup-build-env.sh
-          copy-release.sh "$REPOSITORY" "$STAGING_TAG" \
-              "$REPOSITORY" "$CURRENT_TAG" $create_repo_db $delete_source
+          copy-release.sh "$BINPKGS_REPO" "$STAGING_TAG" \
+              "$BINPKGS_REPO" "$RELEASED_TAG" $create_pkgdb $delete_source

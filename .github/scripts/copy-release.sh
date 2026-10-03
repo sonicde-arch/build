@@ -5,95 +5,67 @@
 # SPDX-FileCopyrightInfo: 2026 Joseph Crowell joseph.w.crowell@gmail.com
 
 set -eu
-set -x
+test "${RUNNER_DEBUG:-}" = 1 && set -x
 
-. "$SCRIPTS_DIR"/libarchpkg.sh
+. "$SCRIPTS_DIR"/libarch.sh
+. "$SCRIPTS_DIR"/libdocker.sh
 . "$SCRIPTS_DIR"/libgithub.sh
 . "$SCRIPTS_DIR"/liblog.sh
 
 
-# Arguments
+srcrepo=${1-$SOURCE_REPOSITORY}
+srctag=${2-$SOURCE_TAG}
+destrepo=${3-$DESTINATION_REPOSITORY}
+desttag=${4-$DESTINATION_TAG}
+createdb=${5:-0}
+delsrc=${6:-0}
 
-src_repo=${1-$SOURCE_REPOSITORY}
-src_tag=${2-$SOURCE_TAG}
-tgt_repo=${3-$TARGET_REPOSITORY}
-tgt_tag=${4-$TARGET_TAG}
-recreate_db=${5:-0}
-del_src=${6:-0}
+: "${PKGDB_PREFIX:?PKGDB_PREFIX must not be empty}"
+: "${TMP_TAG:?TMP_TAG must not be empty}"
 
+SOURCE_DB=$PKGDB_PREFIX-${srcrepo##*/}
+DEST_DB=$PKGDB_PREFIX-${destrepo##*/}
 
-# Environment
-
-: "${DOCKER_IMAGE:?DOCKER_IMAGE must not be empty}"
-: "${REPO_DB_PREFIX:?REPO_DB_PREFIX must not be empty}"
-: "${REPO_DB_NAME:?REPO_DB_NAME must not be empty}"
-
-
-# Constants
-
-CEXT='tar.zst'
-SRC_DB_NAME=$REPO_DB_PREFIX-${src_repo##*/}
-TGT_DB_NAME=$REPO_DB_PREFIX-${tgt_repo##*/}
-
-
-# Functions
-
-# Arguments
-# $1: old prefix
-# $2: new prefix
-# $3-$n: files to rename
-chprefix() {
-	old=$1 ; new=$2 ; shift 2
-
-	for file in "$@"; do
-		dir=${file%/*}
-		name=${file##*/}
-		case "$name" in
-			"$old"*)
-				test "$dir" = "$file" && dir=.
-				mv "$file" "$dir/$new${name#"$old"}"
-				;;
-		esac
-	done
-}
-
-
-# Main
+ARCFMT='tar.zst'
+tmptag=$TMP_TAG
 
 trap log_close 0
 trap 'exit 1' HUP INT TERM
 log_open
 
-tmp_tag="$tgt_tag-next"
 
-tmpdir=$(mktemp -d)
-cd "$tmpdir"
+test "$createdb" = 1 && container_start
 
-inf 'Downloading assets from %s@%s' "$src_repo" "$src_tag"
-ghpy release download -v --repo "$src_repo" "$src_tag" --pattern '*'
+cd "$(mktemp -d)"
 
-if [ "$recreate_db" -eq 1 ] ; then
-	inf 'Recreating package database'
-	rm -f "$SRC_DB_NAME"*.db* "$SRC_DB_NAME"*.files*
-	repodb_add_packages "$DOCKER_IMAGE" "$TGT_DB_NAME.db.$CEXT" ./*pkg.$CEXT
-	rm -f "$TGT_DB_NAME".*.old
+inf 'Downloading assets from %s@%s' "$srcrepo" "$srctag"
+ghpy release download -v --repo "$srcrepo" "$srctag" --pattern '*'
+
+if [ "$createdb" = 1 ] ; then
+	inf 'Creating package database'
+	rm -f "$SOURCE_DB".db* "$SOURCE_DB".files*
+	arch_repo_add -- "$DEST_DB".db.$ARCFMT *.pkg.$ARCFMT
 fi
 
-test "$SRC_DB_NAME" != "$TGT_DB_NAME" &&
-	chprefix "$SRC_DB_NAME" "$TGT_DB_NAME" ./*.db* ./*.files*
+if "$SOURCE_DB" != "$DEST_DB" ; then
+	mv "$SOURCE_DB".db "$DEST_DB".db
+	mv "$SOURCE_DB".db.$ARCFMT "$DEST_DB".db.$ARCFMT
+	mv "$SOURCE_DB".files "$DEST_DB".files
+	mv "$SOURCE_DB".files.$ARCFMT "$DEST_DB".files.$ARCFMT
+fi
 
-ls "$TGT_DB_NAME.db" "$TGT_DB_NAME.db.$CEXT" 1>/dev/null # assert files exist
+ls "$DEST_DB".db "$DEST_DB".db.$ARCFMT 1>/dev/null # assert files exist
 
-inf 'Creating new release %s@%s' "$tgt_repo" "$tgt_tag"
-gh_release_delete "$tgt_repo" "$tmp_tag" 2>/dev/null || :
-gh release create --draft --repo "$tgt_repo" "$tmp_tag"
+inf 'Creating new release %s@%s' "$destrepo" "$desttag"
+gh_release_delete "$destrepo" "$tmptag" 2>/dev/null || :
+gh release create --draft --repo "$destrepo" "$tmptag"
 
-inf 'Uploading assets to %s@%s' "$tgt_repo" "$tgt_tag"
-ghpy release upload -v --repo "$tgt_repo" "$tmp_tag" -- *
+inf 'Uploading assets to %s@%s' "$destrepo" "$desttag"
+ghpy release upload -v --repo "$destrepo" "$tmptag" -- *
 
-release-new-release.sh "$tgt_repo" "$tmp_tag" "$tgt_tag"
+release-new-release.sh "$destrepo" "$tmptag" "$desttag"
 
-if [ "$del_src" -eq 1 ] ; then
-	inf 'Deleting release %s@%s' "$src_repo" "$src_tag"
-	gh_release_delete "$src_repo" "$src_tag"
+if [ "$delsrc" = 1 ] ; then
+	inf 'Deleting release %s@%s' "$srcrepo" "$srctag"
+	gh_release_delete "$srcrepo" "$srctag"
 fi
