@@ -25,7 +25,8 @@ container_start() {
 	test "${SETUP_TMPFS:-0}" = 1 && _dopts=$(_cont_setup_tmpfs)
 
 	docker run --detach --name "$CONTAINER_NAME" --workdir "$GITHUB_WORKSPACE" \
-		--volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" $_dopts \
+		--volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
+		--volume "$RUNNER_TEMP:$RUNNER_TEMP" $_dopts \
 		"$DOCKER_IMAGE" sh -c 'while :; do sleep 3600; done' >/dev/null &
 	_CONT_STATE=$!
 	gh_env_set _CONT_STATE "$_CONT_STATE"
@@ -39,6 +40,7 @@ _container_setup() {
 		set -eu
 		useradd -m -u '$(id -u)' '$CONTAINER_USER'
 		chown -R '$CONTAINER_USER': /home/'$CONTAINER_USER'
+		chown -R '$CONTAINER_USER': '$RUNNER_TEMP'
 		printf '%s ALL=(ALL) NOPASSWD: ALL\n' '$CONTAINER_USER' >> /etc/sudoers
 	"
 }
