@@ -83,6 +83,15 @@ grep -vFxf released.csv missing.csv > build-assets.csv || :
 grep -Fxf released.csv missing.csv | sed 's/$/*/' > copy-assets.csv || :
 
 
+for file in *.csv ; do
+	echo "$file:"
+	cat "$file"
+	echo
+done
+
+exit 0
+
+
 if [ -s copy-assets.csv ] ; then
 	inf 'Copying missing assets from %s to %s' "$reltag" "$stagetag"
 	gh_release_copy_assets_ff "$repo" "$reltag" "$stagetag" copy-assets.csv
