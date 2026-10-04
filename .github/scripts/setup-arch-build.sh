@@ -52,7 +52,7 @@ if [ -s assets.csv ] ; then
 fi
 
 
-inf 'Setting up the Arch container'
+inf 'Setting up the container'
 
 cd "$GITHUB_WORKSPACE"
 

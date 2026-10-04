@@ -145,7 +145,6 @@ _list_bdepends() {
 	_bol='^[[:blank:]]*'
 	_bdeps_re="1,/^pkgname = /s/${_bol}(depends|makedepends) = (.*)$/^\2|/p"
 
-	test -d "$2/$3" && return 0
 	sed -E -n "$_bdeps_re" "$1/$3/.SRCINFO" | grep -f - "$2"/pkgs2bases.csv |
 	while IFS='|' read -r _ pkgbase; do
 		mkdir "$2/$pkgbase" 2>/dev/null || continue
