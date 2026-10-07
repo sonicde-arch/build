@@ -13,7 +13,7 @@ set -eu
 
 : "${APP_PRIVATE_KEY:?APP_PRIVATE_KEY must not be empty}"
 : "${GITHUB_WORKSPACE:?GITHUB_WORKSPACE must not be empty}"
-: "${PACKAGES_REPOSITORY:?PACKAGES_REPOSITORY must not be empty}"
+: "${PKGSPECS_REPO:?PKGSPECS_REPO must not be empty}"
 
 
 # Main
@@ -33,7 +33,7 @@ bot="${GH_APP_SLUG}[bot]"
 bot_id=$(gh api "/users/$bot" --jq '.id')
 
 gh auth setup-git
-gh repo clone "$PACKAGES_REPOSITORY" "$GITHUB_WORKSPACE" -- \
+gh repo clone "$PKGSPECS_REPO" "$GITHUB_WORKSPACE" -- \
 	--branch "$BRANCH" --depth 1 --single-branch
 git config user.name "$bot"
 git config user.email "${bot_id}+$bot@users.noreply.github.com"

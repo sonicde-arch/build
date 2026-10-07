@@ -2,6 +2,9 @@
 
 # shellcheck disable=SC2034,SC2329
 
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightInfo: 2026 callmetango for SonicDE
+
 LOG_IMPL="${LOG_IMPL:-libghlog.sh}"
 
 
