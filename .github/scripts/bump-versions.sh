@@ -96,6 +96,7 @@ for config in */.nvchecker.toml; do
 		makepkg --printsrcinfo > .SRCINFO
 	'
 
+	version=${version}-1
 	msg=$(printf '%s: v%s\n\nBumping %s from %s to %s on %s branch.' "$pkgbase" \
 		"$version" "$pkgbase" "$pkgver" "$version" "$base")
 	git switch --create "$pr"
