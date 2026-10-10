@@ -64,7 +64,7 @@ arch_makepkg_conf_options "$PACKAGING_OPTIONS"
 arch_pacman_conf DownloadUser "$CONTAINER_USER"
 
 container_sudo pacman-key --init
-container_sudo pacman --sync --refresh --sysupgrade
+container_sudo pacman --sync --refresh --sysupgrade --noconfirm
 
 if [ "${SETUP_NINJA:-}" = 1 ] ; then
 	arch_install ninja
