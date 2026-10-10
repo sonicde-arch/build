@@ -25,7 +25,7 @@ cmd=$(cat <<-'CMD'
 	set -eu
 
 	for n in 1 2 3; do
-		makepkg $1 --nobuild && break
+		makepkg $1 --nobuild ${2:-} && break
 		test $n -eq 3 && printf 'makepkg init timed out\n' && exit 124
 		printf 'Dependencies download failed; retrying in %ds\n' $n
 		sleep $n
