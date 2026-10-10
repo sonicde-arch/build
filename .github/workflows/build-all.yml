@@ -339,6 +339,7 @@ jobs:
       - sonic-plasma5-support-library
       - sonic-polkit-agent
       - sonic-system-monitor-library
+      - sonic-system-settings
       - sonic-workspace
     with:
       package: sonic-desktop-interface
@@ -2350,6 +2351,7 @@ jobs:
       - sonic-frameworks-quick-ui
       - sonic-frameworks-settings
       - sonic-frameworks-settings-utils
+      - sonic-system-settings
     with:
       package: sonic-system-info
       branch: ${{ inputs.branch }}
@@ -2898,6 +2900,7 @@ jobs:
       - sonic-ssh-password-prompt
       - sonic-system-info
       - sonic-system-monitor
+      - sonic-system-settings
       - sonic-system-stats
       - sonic-terminal
       - sonic-terminal-tools
