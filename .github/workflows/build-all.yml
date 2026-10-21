@@ -338,6 +338,7 @@ jobs:
       - sonic-pipewire
       - sonic-plasma5-support-library
       - sonic-polkit-agent
+      - sonic-power-management
       - sonic-system-monitor-library
       - sonic-system-settings
       - sonic-workspace
@@ -1844,6 +1845,7 @@ jobs:
       - sonic-interface-libraries
       - sonic-network-manager
       - sonic-pipewire
+      - sonic-power-management
       - sonic-screen-library
       - sonic-win
       - sonic-workspace
@@ -2060,6 +2062,68 @@ jobs:
       - sonic-polkit
     with:
       package: sonic-polkit-agent
+      branch: ${{ inputs.branch }}
+    secrets: inherit
+
+  sonic-power-management:
+    if: |
+      !failure() && !cancelled() &&
+      contains(fromJSON(needs._setup.outputs.packages), 'sonic-power-management')
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-activities
+      - sonic-frameworks-app-info
+      - sonic-frameworks-auth
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-device-integration
+      - sonic-frameworks-doctools
+      - sonic-frameworks-idle-tracker
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-keybind
+      - sonic-frameworks-notifications
+      - sonic-frameworks-package
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-xml-gui
+      - sonic-interface-libraries
+      - sonic-screen-library
+      - sonic-workspace
+    with:
+      package: sonic-power-management
+      branch: ${{ inputs.branch }}
+    secrets: inherit
+
+  sonic-print-management:
+    if: |
+      !failure() && !cancelled() &&
+      contains(fromJSON(needs._setup.outputs.packages), 'sonic-print-management')
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-notifications
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-widgets-addons
+      - sonic-frameworks-windowsystem
+      - sonic-interface-libraries
+    with:
+      package: sonic-print-management
       branch: ${{ inputs.branch }}
     secrets: inherit
 
@@ -2315,6 +2379,19 @@ jobs:
       branch: ${{ inputs.branch }}
     secrets: inherit
 
+  sonic-silver-sound-theme:
+    if: |
+      !failure() && !cancelled() &&
+      contains(fromJSON(needs._setup.outputs.packages), 'sonic-silver-sound-theme')
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-silver-sound-theme
+      branch: ${{ inputs.branch }}
+    secrets: inherit
+
   sonic-ssh-password-prompt:
     if: |
       !failure() && !cancelled() &&
@@ -2326,6 +2403,7 @@ jobs:
       - sonic-frameworks-core-addons
       - sonic-frameworks-doctools
       - sonic-frameworks-internationalization
+      - sonic-frameworks-settings
       - sonic-frameworks-widgets-addons
     with:
       package: sonic-ssh-password-prompt
@@ -2556,6 +2634,41 @@ jobs:
       branch: ${{ inputs.branch }}
     secrets: inherit
 
+  sonic-theme-sdk:
+    if: |
+      !failure() && !cancelled() &&
+      contains(fromJSON(needs._setup.outputs.packages), 'sonic-theme-sdk')
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-addons-downloader
+      - sonic-frameworks-archive
+      - sonic-frameworks-autocomplete
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-color-scheme
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
+      - sonic-frameworks-dbus
+      - sonic-frameworks-doctools
+      - sonic-frameworks-icon-themes
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-io
+      - sonic-frameworks-package
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-frameworks-svg
+      - sonic-frameworks-text-editor
+      - sonic-frameworks-widgets-addons
+      - sonic-interface-libraries
+      - sonic-plasma5-support-library
+    with:
+      package: sonic-theme-sdk
+      branch: ${{ inputs.branch }}
+    secrets: inherit
+
   sonic-thunderbolt:
     if: |
       !failure() && !cancelled() &&
@@ -2777,6 +2890,7 @@ jobs:
       - sonic-night-light
       - sonic-pipewire
       - sonic-screenlocker
+      - sonic-silver-sound-theme
       - sonic-system-monitor-library
       - sonic-system-stats
       - sonic-terminal-tools
@@ -2891,12 +3005,15 @@ jobs:
       - sonic-oxygen-sounds
       - sonic-pipewire
       - sonic-polkit-agent
+      - sonic-power-management
+      - sonic-print-management
       - sonic-qt-theme-bridge
       - sonic-screen
       - sonic-screenies
       - sonic-screenlocker
       - sonic-silver
       - sonic-silver-gtk
+      - sonic-silver-sound-theme
       - sonic-ssh-password-prompt
       - sonic-system-info
       - sonic-system-monitor
@@ -3058,6 +3175,8 @@ jobs:
       - sonic-plasma5-support-library
       - sonic-polkit
       - sonic-polkit-agent
+      - sonic-power-management
+      - sonic-print-management
       - sonic-pulseaudio-library
       - sonic-pyside
       - sonic-qt-accounts-library
@@ -3071,6 +3190,7 @@ jobs:
       - sonic-silver-gtk
       - sonic-silver-icons
       - sonic-silver-sddm
+      - sonic-silver-sound-theme
       - sonic-ssh-password-prompt
       - sonic-system-info
       - sonic-system-log
@@ -3080,6 +3200,7 @@ jobs:
       - sonic-system-stats
       - sonic-terminal
       - sonic-terminal-tools
+      - sonic-theme-sdk
       - sonic-thunderbolt
       - sonic-tv-interface
       - sonic-vault
