@@ -1753,6 +1753,28 @@ jobs:
       branch: ${{ inputs.branch }}
     secrets: inherit
 
+  sonic-keyboard:
+    if: |
+      !failure() && !cancelled() &&
+      contains(fromJSON(needs._setup.outputs.packages), 'sonic-keyboard')
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-core-addons
+      - sonic-frameworks-crash-handler
+      - sonic-frameworks-data-models
+      - sonic-frameworks-internationalization
+      - sonic-frameworks-quick-ui
+      - sonic-frameworks-quick-ui-addons
+      - sonic-frameworks-settings
+      - sonic-frameworks-settings-utils
+      - sonic-interface-libraries
+    with:
+      package: sonic-keyboard
+      branch: ${{ inputs.branch }}
+    secrets: inherit
+
   sonic-launcher-menu-edit:
     if: |
       !failure() && !cancelled() &&
@@ -1798,11 +1820,13 @@ jobs:
       - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-package
+      - sonic-frameworks-quick-silver-style
       - sonic-frameworks-quick-ui
       - sonic-frameworks-settings
       - sonic-frameworks-settings-utils
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
+      - sonic-keyboard
       - sonic-screen-library
       - sonic-workspace
     with:
@@ -2306,6 +2330,7 @@ jobs:
       - sonic-frameworks-windowsystem
       - sonic-frameworks-xml-gui
       - sonic-interface-libraries
+      - sonic-keyboard
       - sonic-screen-library
     with:
       package: sonic-screenlocker
@@ -2887,6 +2912,7 @@ jobs:
       - sonic-frameworks-windowsystem
       - sonic-frameworks-xml-gui
       - sonic-interface-libraries
+      - sonic-keyboard
       - sonic-night-light
       - sonic-pipewire
       - sonic-screenlocker
@@ -3162,6 +3188,7 @@ jobs:
       - sonic-gtk-theme-bridge
       - sonic-interface-libraries
       - sonic-keybind-daemon
+      - sonic-keyboard
       - sonic-launcher-menu-edit
       - sonic-login-manager
       - sonic-mobile-interface
