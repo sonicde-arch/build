@@ -27,6 +27,7 @@ gh_env_set GH_APP_SLUG "$(printf '%s\n' "$auth" | cut -f2)"
 gh_env_set GITHUB_TOKEN "$(printf '%s\n' "$auth" | cut -f1)"
 gh_env_set GH_TOKEN "$GITHUB_TOKEN"
 
+sudo apt update
 sudo apt install --yes nvchecker
 
 bot="${GH_APP_SLUG}[bot]"
