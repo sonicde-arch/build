@@ -338,11 +338,11 @@ jobs:
       - sonic-interface-libraries
       - sonic-launcher-menu-edit
       - sonic-pipewire
-      - sonic-plasma5-support-library
       - sonic-polkit-agent
       - sonic-power-management
       - sonic-system-monitor-library
       - sonic-system-settings
+      - sonic-win
       - sonic-workspace
     with:
       package: sonic-desktop-interface
@@ -429,7 +429,6 @@ jobs:
       - sonic-frameworks-windowsystem
       - sonic-frameworks-xml-gui
       - sonic-interface-libraries
-      - sonic-plasma5-support-library
     with:
       package: sonic-drawing-tablet
       branch: ${{ inputs.branch }}
@@ -1919,6 +1918,7 @@ jobs:
       - sonic-frameworks-svg
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
+      - sonic-keyboard
       - sonic-network-manager
       - sonic-pipewire
       - sonic-power-management
@@ -2302,7 +2302,6 @@ jobs:
       - sonic-frameworks-svg
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
-      - sonic-plasma5-support-library
       - sonic-screen-library
     with:
       package: sonic-screen
@@ -2678,6 +2677,9 @@ jobs:
       - sonic-frameworks-notification-settings
       - sonic-frameworks-notifications
       - sonic-frameworks-pseudo-terminal
+      - sonic-frameworks-qml-bridge
+      - sonic-frameworks-quick-desktop-style
+      - sonic-frameworks-quick-ui
       - sonic-frameworks-settings
       - sonic-frameworks-settings-ui
       - sonic-frameworks-text-widgets
@@ -2745,7 +2747,6 @@ jobs:
       - sonic-frameworks-text-editor
       - sonic-frameworks-widgets-addons
       - sonic-interface-libraries
-      - sonic-plasma5-support-library
     with:
       package: sonic-theme-sdk
       branch: ${{ inputs.branch }}
@@ -2801,6 +2802,7 @@ jobs:
       - sonic-frameworks-svg
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
+      - sonic-keyboard
       - sonic-screen-library
       - sonic-workspace
     with:
@@ -2860,7 +2862,6 @@ jobs:
       - sonic-frameworks-windowsystem
       - sonic-interface-libraries
       - sonic-network-manager
-      - sonic-plasma5-support-library
     with:
       package: sonic-welcome-center
       branch: ${{ inputs.branch }}
@@ -3023,6 +3024,7 @@ jobs:
       - sonic-frameworks-windowsystem
       - sonic-frameworks-xml-gui
       - sonic-interface-libraries
+      - sonic-terminal
       - sonic-win
       - sonic-workspace
     with:
