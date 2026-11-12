@@ -314,7 +314,9 @@ jobs:
       - sonic-frameworks-icon-themes
       - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-ipc
       - sonic-frameworks-keybind
+      - sonic-frameworks-logging
       - sonic-frameworks-notification-settings
       - sonic-frameworks-notifications
       - sonic-frameworks-open-collab
@@ -518,7 +520,10 @@ jobs:
       - sonic-frameworks-auth
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
+      - sonic-frameworks-init-info
       - sonic-frameworks-internationalization
+      - sonic-frameworks-ipc
+      - sonic-frameworks-logging
       - sonic-frameworks-quick-ui
       - sonic-frameworks-settings
       - sonic-frameworks-settings-utils
@@ -772,6 +777,7 @@ jobs:
       - sonic-frameworks-archive
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-internationalization
+      - sonic-frameworks-logging
     with:
       package: sonic-frameworks-doctools
       branch: ${{ inputs.branch }}
@@ -905,6 +911,20 @@ jobs:
       branch: ${{ inputs.branch }}
     secrets: inherit
 
+  sonic-frameworks-init-info:
+    if: |
+      !failure() && !cancelled() &&
+      contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-init-info')
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-logging
+    with:
+      package: sonic-frameworks-init-info
+      branch: ${{ inputs.branch }}
+    secrets: inherit
+
   sonic-frameworks-internationalization:
     if: |
       !failure() && !cancelled() &&
@@ -995,6 +1015,20 @@ jobs:
       branch: ${{ inputs.branch }}
     secrets: inherit
 
+  sonic-frameworks-ipc:
+    if: |
+      !failure() && !cancelled() &&
+      contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-ipc')
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+      - sonic-frameworks-logging
+    with:
+      package: sonic-frameworks-ipc
+      branch: ${{ inputs.branch }}
+    secrets: inherit
+
   sonic-frameworks-keybind:
     if: |
       !failure() && !cancelled() &&
@@ -1043,6 +1077,19 @@ jobs:
       - sonic-frameworks-keyring
     with:
       package: sonic-frameworks-keyring-pam
+      branch: ${{ inputs.branch }}
+    secrets: inherit
+
+  sonic-frameworks-logging:
+    if: |
+      !failure() && !cancelled() &&
+      contains(fromJSON(needs._setup.outputs.packages), 'sonic-frameworks-logging')
+    uses: ./.github/workflows/build-package.yml
+    needs:
+      - _setup
+      - sonic-frameworks-cmake-modules
+    with:
+      package: sonic-frameworks-logging
       branch: ${{ inputs.branch }}
     secrets: inherit
 
@@ -1745,6 +1792,7 @@ jobs:
       - sonic-frameworks-dbus
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-logging
       - sonic-frameworks-progress-ui
       - sonic-frameworks-settings
       - sonic-frameworks-windowsystem
@@ -1817,8 +1865,11 @@ jobs:
       - sonic-frameworks-cmake-modules
       - sonic-frameworks-core-addons
       - sonic-frameworks-dbus
+      - sonic-frameworks-init-info
       - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-ipc
+      - sonic-frameworks-logging
       - sonic-frameworks-package
       - sonic-frameworks-quick-silver-style
       - sonic-frameworks-quick-ui
@@ -2319,7 +2370,9 @@ jobs:
       - sonic-frameworks-idle-tracker
       - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-ipc
       - sonic-frameworks-keybind
+      - sonic-frameworks-logging
       - sonic-frameworks-notifications
       - sonic-frameworks-package
       - sonic-frameworks-qml-bridge
@@ -2351,6 +2404,7 @@ jobs:
       - sonic-frameworks-gui-addons
       - sonic-frameworks-icon-themes
       - sonic-frameworks-internationalization
+      - sonic-frameworks-logging
       - sonic-frameworks-qt-integration
       - sonic-frameworks-quick-ui
       - sonic-frameworks-settings
@@ -2617,7 +2671,9 @@ jobs:
       - sonic-frameworks-icon-themes
       - sonic-frameworks-internationalization
       - sonic-frameworks-io
+      - sonic-frameworks-ipc
       - sonic-frameworks-keybind
+      - sonic-frameworks-logging
       - sonic-frameworks-notification-settings
       - sonic-frameworks-notifications
       - sonic-frameworks-pseudo-terminal
@@ -2829,7 +2885,9 @@ jobs:
       - sonic-frameworks-doctools
       - sonic-frameworks-gui-addons
       - sonic-frameworks-internationalization
+      - sonic-frameworks-ipc
       - sonic-frameworks-keybind
+      - sonic-frameworks-logging
       - sonic-frameworks-notifications
       - sonic-frameworks-package
       - sonic-frameworks-qml-bridge
@@ -2946,6 +3004,7 @@ jobs:
       - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-keybind
+      - sonic-frameworks-logging
       - sonic-frameworks-networkmanager
       - sonic-frameworks-notifications
       - sonic-frameworks-package
@@ -3140,13 +3199,16 @@ jobs:
       - sonic-frameworks-icon-themes
       - sonic-frameworks-idle-tracker
       - sonic-frameworks-image-formats
+      - sonic-frameworks-init-info
       - sonic-frameworks-internationalization
       - sonic-frameworks-io
       - sonic-frameworks-io-extras
       - sonic-frameworks-io-fuse
+      - sonic-frameworks-ipc
       - sonic-frameworks-keybind
       - sonic-frameworks-keyring
       - sonic-frameworks-keyring-pam
+      - sonic-frameworks-logging
       - sonic-frameworks-modemmanager
       - sonic-frameworks-networkmanager
       - sonic-frameworks-notification-settings
