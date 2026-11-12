@@ -472,6 +472,7 @@ jobs:
       - sonic-frameworks-widgets-addons
       - sonic-frameworks-windowsystem
       - sonic-frameworks-xml-gui
+      - sonic-terminal
     with:
       package: sonic-ecco
       branch: ${{ inputs.branch }}
